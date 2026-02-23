@@ -22,21 +22,21 @@ export const Button: React.FC<ButtonProps> = ({
     let variantClass = "";
     if (variant === 'primary') variantClass = "btn-primary";
     else if (variant === 'outline') variantClass = "btn-outline";
-    else if (variant === 'danger') variantClass = "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200";
-    else if (variant === 'ghost') variantClass = "hover:bg-slate-100 text-slate-600 border-transparent shadow-none";
+    else if (variant === 'danger') variantClass = "btn-danger";
+    else if (variant === 'ghost') variantClass = "btn-ghost";
 
-    const sizeClass = size === 'sm' ? "text-xs px-3 py-1.5 h-8 gap-1" :
-        size === 'lg' ? "text-base px-6 py-3" : "";
+    const sizeClass = size === 'sm' ? "!px-4 !py-2 !text-[10px]" :
+        size === 'lg' ? "!px-10 !py-6 !text-lg" : "";
 
     return (
         <button
-            className={`${baseClass} ${variantClass} ${sizeClass} ${className || ''} ${!children ? 'aspect-square !p-0 flex items-center justify-center rounded-xl' : ''}`}
+            className={`${baseClass} ${variantClass} ${sizeClass} ${className || ''}`}
             disabled={isLoading || props.disabled}
             {...props}
         >
-            {isLoading && <Loader2 className="animate-spin" size={16} />}
+            {isLoading && <Loader2 className="animate-spin" size={size === 'sm' ? 14 : 20} />}
             {!isLoading && icon && (
-                <span className={children ? (size === 'sm' ? "mr-1" : "mr-2") : "flex items-center justify-center"}>
+                <span className={children ? "-ml-1" : ""}>
                     {icon}
                 </span>
             )}

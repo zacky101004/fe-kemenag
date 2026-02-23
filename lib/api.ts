@@ -33,13 +33,25 @@ export const api = {
     },
     admin: {
         getStats: () => apiFetch('/admin/dashboard'),
-        getLaporan: () => apiFetch('/admin/laporan'),
+        getLaporan: (params?: any) => {
+            const searchParams = new URLSearchParams(params).toString();
+            return apiFetch(`/admin/laporan?${searchParams}`);
+        },
         verifyLaporan: (id: number, data: any) => apiFetch(`/admin/laporan/${id}/verify`, { method: 'POST', body: JSON.stringify(data) }),
-        getRecap: () => apiFetch('/admin/recap'),
+        getRecap: (params?: any) => {
+            const searchParams = new URLSearchParams(params).toString();
+            return apiFetch(`/admin/recap?${searchParams}`);
+        },
+        deleteLaporan: (id: number) => apiFetch(`/admin/laporan/${id}`, { method: 'DELETE' }),
+        restoreLaporan: (id: number) => apiFetch(`/admin/laporan/${id}/restore`, { method: 'POST' }),
+        permanentDeleteLaporan: (id: number) => apiFetch(`/admin/laporan/${id}/permanent`, { method: 'DELETE' }),
+        createPengumuman: (data: any) => apiFetch('/master/pengumuman', { method: 'POST', body: JSON.stringify(data) }),
+        deletePengumuman: (id: number) => apiFetch(`/master/pengumuman/${id}`, { method: 'DELETE' }),
     },
     master: {
         // Madrasah (Matching DB: id_madrasah, nama_madrasah)
         getMadrasah: () => apiFetch('/master/madrasah'),
+        getMadrasahById: (id: string | number) => apiFetch(`/master/madrasah/${id}`),
         storeMadrasah: (data: any) => apiFetch('/master/madrasah', { method: 'POST', body: JSON.stringify(data) }),
         updateMadrasah: (id: number, data: any) => apiFetch(`/master/madrasah/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
         deleteMadrasah: (id: number) => apiFetch(`/master/madrasah/${id}`, { method: 'DELETE' }),
@@ -55,9 +67,15 @@ export const api = {
         storePengumuman: (data: any) => apiFetch('/master/pengumuman', { method: 'POST', body: JSON.stringify(data) }),
     },
     operator: {
-        getDashboard: () => apiFetch('/operator/dashboard'),
+        getDashboard: (params?: any) => {
+            const searchParams = new URLSearchParams(params).toString();
+            return apiFetch(`/operator/dashboard?${searchParams}`);
+        },
         getLaporanDetail: (id: string) => apiFetch(`/laporan/${id}`),
         createLaporan: (data: any) => apiFetch('/laporan', { method: 'POST', body: JSON.stringify(data) }),
+        deleteLaporan: (id: string) => apiFetch(`/laporan/${id}`, { method: 'DELETE' }),
+        restoreLaporan: (id: string) => apiFetch(`/laporan/${id}/restore`, { method: 'POST' }),
+        permanentDeleteLaporan: (id: string) => apiFetch(`/laporan/${id}/permanent`, { method: 'DELETE' }),
 
         // Match Backend Routes
         updateSiswa: (id: string, data: any) => apiFetch(`/laporan/${id}/siswa`, { method: 'PUT', body: JSON.stringify({ data }) }),

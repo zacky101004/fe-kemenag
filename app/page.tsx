@@ -2,17 +2,16 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, Lock, LogIn, ShieldCheck, CheckCircle2, AlertCircle } from 'lucide-react';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
+import { User, Lock, LogIn, School, AlertCircle, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { api } from '@/lib/api';
 
 export default function LoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    username: '', // Berubah dari email ke username sesuai DB
+    username: '',
     password: '',
   });
 
@@ -29,11 +28,9 @@ export default function LoginPage() {
         throw new Error(data.message || 'Username atau password salah');
       }
 
-      // Simpan Token & Data User
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
 
-      // Redirect berdasarkan role (sesuai Enum di DB)
       if (data.user.role === 'kasi_penmad') {
         router.push('/admin/dashboard');
       } else {
@@ -47,72 +44,116 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-slate-50 font-sans">
-      {/* Left Panel */}
-      <div className="hidden lg:flex relative bg-emerald-900 overflow-hidden items-center justify-center p-20">
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
-        <div className="relative z-10 w-full max-w-xl text-center">
+    <main className="h-screen w-full flex bg-slate-900 overflow-hidden font-sans select-none">
+      {/* Left Side - Visual Branding (65%) */}
+      <div className="hidden lg:flex flex-1 relative bg-slate-900 items-center justify-center p-20 overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,#10b981_0%,transparent_40%)] opacity-20" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,#0f172a_0%,transparent_40%)] opacity-80" />
 
-          <h1 className="text-7xl font-black text-white leading-[0.9] tracking-tighter mb-8 uppercase text-left">
-            Aplikasi<br />
-            <span className="text-emerald-400 italic">Pelaporan</span><br />
-            Bulanan.
+        {/* Abstract Pattern */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border-[100px] border-slate-800/30 rounded-full blur-3xl" />
+
+        <div className="relative z-10 max-w-4xl text-left">
+          <div className="w-20 h-20 bg-emerald-500 rounded-2xl border-4 border-slate-900 flex items-center justify-center text-slate-900 mb-10 shadow-[8px_8px_0_0_#ffffff20]">
+            <School size={40} strokeWidth={2.5} />
+          </div>
+
+          <h1 className="text-9xl font-black text-white leading-[0.85] tracking-tighter mb-8 italic">
+            SI-EMIS<br />
+            <span className="text-emerald-500">KEMENAG</span>
           </h1>
-          <p className="text-emerald-100 text-xl font-medium leading-relaxed mb-12 text-left border-l-4 border-emerald-500 pl-8 py-2">
-            Sistem Informasi Pelaporan Madrasah Terintegrasi Kantor Kementerian Agama Kabupaten.
-          </p>
+
+          <div className="flex items-center gap-6 border-l-4 border-emerald-500 pl-8">
+            <div>
+              <p className="text-2xl font-bold text-slate-400 leading-tight">Sistem Informasi Pelaporan</p>
+              <p className="text-2xl font-bold text-slate-500 leading-tight">Madrasah Terintegrasi</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Right Panel */}
-      <div className="flex items-center justify-center p-8 md:p-12 lg:p-24 bg-white relative">
-        <div className="w-full max-w-md my-auto">
-          <div className="mb-5">
-            <h2 className="text-5xl font-black text-slate-900 tracking-tighter leading-tight uppercase mb-4">
-              Log In <br />
-              <span className="text-emerald-700 bg-emerald-50 px-2">SI-LAPOR</span>
-            </h2>
-            <p className="text-slate-500 font-bold text-lg">Gunakan Username Akun anda untuk masuk.</p>
+      {/* Right Side - Login Form (35%) */}
+      <div className="w-full lg:w-[600px] bg-white flex flex-col items-center justify-center p-12 lg:p-20 relative z-20 shadow-2xl">
+        <div className="w-full max-w-sm space-y-10">
+          <div className="text-center lg:text-left">
+            <h2 className="text-4xl font-black text-slate-900 tracking-tighter italic mb-3">SELAMAT DATANG</h2>
+            <p className="text-slate-400 font-bold text-sm uppercase tracking-widest">Silahkan login untuk melanjutkan</p>
           </div>
 
           {error && (
-            <div className="bg-red-50 border-4 border-red-200 p-6 rounded-3xl mb-8 flex items-center gap-4 animate-shake">
-              <AlertCircle className="text-red-600 shrink-0" size={32} />
-              <div>
-                <h4 className="text-red-900 font-black uppercase text-sm tracking-widest">Login Gagal</h4>
-                <p className="text-red-700 font-bold">{error}</p>
-              </div>
+            <div className="bg-rose-50 border-2 border-rose-100 p-4 rounded-2xl flex items-center gap-3 animate-shake">
+              <AlertCircle className="text-rose-500 shrink-0" size={20} />
+              <p className="text-rose-700 font-black text-xs uppercase tracking-wide">{error}</p>
             </div>
           )}
 
-          <form className="space-y-8" onSubmit={handleLogin}>
-            <Input
-              label="Username Pengguna"
-              type="text"
-              placeholder="admin / op_mi"
-              icon={<User size={24} className="text-slate-400" />}
-              required
-              value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-            />
-            <Input
-              label="Kata Sandi"
-              type="password"
-              placeholder="••••••••"
-              icon={<Lock size={24} className="text-slate-400" />}
-              required
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            />
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div className="space-y-5">
+              <div className="group">
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 pl-1">Username / ID</label>
+                <div className="relative transition-all duration-300 focus-within:-translate-y-1">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <User className="text-slate-300 group-focus-within:text-emerald-500 transition-colors" size={20} />
+                  </div>
+                  <input
+                    type="text"
+                    required
+                    className="w-full h-14 pl-12 pr-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-slate-900 font-bold focus:outline-none focus:border-emerald-500 focus:bg-white transition-all placeholder:text-slate-300 placeholder:font-normal"
+                    placeholder="Masukkan ID Pengguna"
+                    value={formData.username}
+                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                  />
+                </div>
+              </div>
 
-            <Button
-              variant="primary"
-              className="w-full py-6 text-xl font-black bg-emerald-900 hover:bg-black transition-all shadow-[0_20px_40px_rgba(0,0,0,0.1)] active:scale-95 group"
-              isLoading={isLoading}
+              <div className="group">
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 pl-1">Kata Sandi</label>
+                <div className="relative transition-all duration-300 focus-within:-translate-y-1">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Lock className="text-slate-300 group-focus-within:text-emerald-500 transition-colors" size={20} />
+                  </div>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    className="w-full h-14 pl-12 pr-12 bg-slate-50 border-2 border-slate-100 rounded-2xl text-slate-900 font-bold focus:outline-none focus:border-emerald-500 focus:bg-white transition-all placeholder:text-slate-300 placeholder:font-normal"
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-emerald-500 transition-colors cursor-pointer z-10"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full h-16 bg-slate-900 hover:bg-emerald-600 text-white rounded-2xl font-black text-lg tracking-widest uppercase flex items-center justify-center gap-3 transition-all duration-300 hover:shadow-xl group disabled:opacity-70 disabled:cursor-not-allowed mt-8"
             >
-              MASUK KEDALAM SISTEM <LogIn className="ml-2 group-hover:translate-x-2 transition-transform" />
-            </Button>
+              {isLoading ? (
+                <span className="animate-pulse">MEMPROSES...</span>
+              ) : (
+                <>
+                  MASUK SEKARANG
+                  <ArrowRight className="group-hover:translate-x-1 transition-transform" size={20} />
+                </>
+              )}
+            </button>
           </form>
+
+          <div className="pt-8 text-center border-t-2 border-slate-50">
+            <p className="text-[10px] uppercase font-black text-slate-300 tracking-[0.2em] hover:text-emerald-500 transition-colors cursor-default">
+              &copy; 2026 Kemenag Kabupaten
+            </p>
+          </div>
         </div>
       </div>
     </main>

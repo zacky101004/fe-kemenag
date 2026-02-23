@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { Save, MapPin, Building, User, Loader2 } from 'lucide-react';
+import { Save, MapPin, Building, User, Loader2, ChevronDown } from 'lucide-react';
+import { KECAMATAN_KAMPAR } from '@/lib/constants';
 import { api } from '@/lib/api';
 
 export default function ProfilMadrasahPage() {
@@ -77,65 +78,80 @@ export default function ProfilMadrasahPage() {
                 </Button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                {/* Left Column - Identity */}
-                <div className="lg:col-span-2 space-y-10">
-                    <Card title="Identitas Madrasah">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <Input label="Nama Madrasah" value={madrasah?.nama_madrasah || ''} onChange={e => updateField('nama_madrasah', e.target.value)} placeholder="Masukkan nama..." />
-                            <Input label="NSM (Nomor Statistik Madrasah)" value={madrasah?.nsm || ''} onChange={e => updateField('nsm', e.target.value)} />
-                            <Input label="NPSN" value={madrasah?.npsn || ''} onChange={e => updateField('npsn', e.target.value)} />
-                            <Input label="No. Piagam Izin Operasional" value={madrasah?.no_piagam || ''} onChange={e => updateField('no_piagam', e.target.value)} />
-                            <Input label="Status Madrasah" value={madrasah?.status_madrasah || ''} onChange={e => updateField('status_madrasah', e.target.value)} />
-                            <Input label="Nilai Akreditasi / Tahun" value={madrasah?.akreditasi || ''} onChange={e => updateField('akreditasi', e.target.value)} />
-                            <Input label="Tahun Berdiri" value={madrasah?.tahun_berdiri || ''} onChange={e => updateField('tahun_berdiri', e.target.value)} />
-                            <Input label="Kode Satker" value={madrasah?.kode_satker || ''} onChange={e => updateField('kode_satker', e.target.value)} placeholder="(Khusus Negeri)" />
-                        </div>
-                    </Card>
+            {/* Top Section - Pimpinan & Lokasi */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <Card title="Pimpinan Lembaga">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <Input label="Nama Kepala Madrasah" value={madrasah?.nama_kepala || ''} onChange={e => updateField('nama_kepala', e.target.value)} />
+                        <Input label="NIP / NIK" value={madrasah?.nip_kepala || ''} onChange={e => updateField('nip_kepala', e.target.value)} />
+                    </div>
+                </Card>
 
-                    <Card title="Alamat & Kontak">
-                        <div className="grid grid-cols-1 gap-8">
-                            <Input label="Alamat / Jalan" value={madrasah?.alamat || ''} onChange={e => updateField('alamat', e.target.value)} />
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <Input label="Desa / Kelurahan" value={madrasah?.desa || ''} onChange={e => updateField('desa', e.target.value)} />
-                                <Input label="Kecamatan" value={madrasah?.kecamatan || ''} onChange={e => updateField('kecamatan', e.target.value)} />
-                                <Input label="Kabupaten / Kota" value={madrasah?.kabupaten || ''} onChange={e => updateField('kabupaten', e.target.value)} />
-                                <Input label="Provinsi" value={madrasah?.provinsi || ''} onChange={e => updateField('provinsi', e.target.value)} />
+                <Card title="Titik Koordinat">
+                    <div className="grid grid-cols-2 gap-6">
+                        <Input label="Latitude" value={madrasah?.latitude || ''} onChange={e => updateField('latitude', e.target.value)} />
+                        <Input label="Longitude" value={madrasah?.longitude || ''} onChange={e => updateField('longitude', e.target.value)} />
+                    </div>
+                </Card>
+            </div>
+
+            {/* Bottom Section - Identitas & Alamat */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Left Column - Identitas Utama */}
+                <div className="space-y-8">
+                    <Card title="Identitas Madrasah">
+                        <div className="space-y-6">
+                            <Input label="Nama Madrasah" value={madrasah?.nama_madrasah || ''} onChange={e => updateField('nama_madrasah', e.target.value)} placeholder="Masukkan nama..." />
+                            <div className="grid grid-cols-2 gap-6">
+                                <Input label="NSM" value={madrasah?.nsm || ''} onChange={e => updateField('nsm', e.target.value)} />
+                                <Input label="NPSN" value={madrasah?.npsn || ''} onChange={e => updateField('npsn', e.target.value)} />
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <Input label="No. Telp Kepala Madrasah" value={madrasah?.telp_kepala || ''} onChange={e => updateField('telp_kepala', e.target.value)} />
-                                <Input label="Email Madrasah" value={madrasah?.email_madrasah || ''} onChange={e => updateField('email_madrasah', e.target.value)} />
+                            <Input label="No. Piagam Izin Operasional" value={madrasah?.no_piagam || ''} onChange={e => updateField('no_piagam', e.target.value)} />
+                            <div className="grid grid-cols-2 gap-6">
+                                <Input label="Status" value={madrasah?.status_madrasah || ''} onChange={e => updateField('status_madrasah', e.target.value)} />
+                                <Input label="Akreditasi" value={madrasah?.akreditasi || ''} onChange={e => updateField('akreditasi', e.target.value)} />
+                            </div>
+                            <div className="grid grid-cols-2 gap-6">
+                                <Input label="Tahun Berdiri" value={madrasah?.tahun_berdiri || ''} onChange={e => updateField('tahun_berdiri', e.target.value)} />
+                                <Input label="Kode Satker (Negeri)" value={madrasah?.kode_satker || ''} onChange={e => updateField('kode_satker', e.target.value)} />
                             </div>
                         </div>
                     </Card>
                 </div>
 
-                {/* Right Column - Map/Coords */}
-                <div className="space-y-10">
-                    <Card title="Titik Koordinat">
-                        <div className="space-y-8">
-                            <div className="bg-slate-100 rounded-3xl h-56 w-full flex flex-col items-center justify-center text-slate-400 border-4 border-dashed border-slate-200">
-                                <MapPin size={64} className="mb-4 text-emerald-700 opacity-50" />
-                                <span className="font-black text-xs uppercase tracking-widest">Buka Google Maps</span>
+                {/* Right Column - Kontak */}
+                <div className="space-y-8">
+                    <Card title="Alamat & Kontak">
+                        <div className="space-y-6">
+                            <Input label="Alamat Lengkap" value={madrasah?.alamat || ''} onChange={e => updateField('alamat', e.target.value)} />
+                            <div className="grid grid-cols-2 gap-6">
+                                <Input label="Desa/Kelurahan" value={madrasah?.desa || ''} onChange={e => updateField('desa', e.target.value)} />
+                                <div className="space-y-2 relative group">
+                                    <label className="input-label">Kecamatan</label>
+                                    <div className="relative">
+                                        <select
+                                            className="select-field border-2 appearance-none pr-12 hover:border-emerald-500 transition-all cursor-pointer uppercase font-bold"
+                                            value={madrasah?.kecamatan || ''}
+                                            onChange={e => updateField('kecamatan', e.target.value)}
+                                        >
+                                            <option value="">Pilih Kecamatan</option>
+                                            {KECAMATAN_KAMPAR.map(k => (
+                                                <option key={k} value={k}>{k}</option>
+                                            ))}
+                                        </select>
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-hover:text-emerald-600 transition-colors">
+                                            <ChevronDown size={18} />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="grid grid-cols-1 gap-6">
-                                <Input label="Latitude" value={madrasah?.latitude || ''} onChange={e => updateField('latitude', e.target.value)} />
-                                <Input label="Longitude" value={madrasah?.longitude || ''} onChange={e => updateField('longitude', e.target.value)} />
+                            <div className="grid grid-cols-2 gap-6">
+                                <Input label="Kabupaten/Kota" value={madrasah?.kabupaten || ''} onChange={e => updateField('kabupaten', e.target.value)} />
+                                <Input label="Provinsi" value={madrasah?.provinsi || ''} onChange={e => updateField('provinsi', e.target.value)} />
                             </div>
-                            <Button variant="outline" className="w-full justify-center py-4 text-lg font-black border-4 border-slate-200 text-slate-500 hover:bg-white hover:border-emerald-500 transition-all">
-                                AMBIL LOKASI OTOMATIS
-                            </Button>
-                        </div>
-                    </Card>
-
-                    <Card title="Pimpinan Lembaga">
-                        <div className="flex flex-col items-center text-center p-6">
-                            <div className="w-40 h-40 rounded-[2.5rem] bg-emerald-50 mb-8 overflow-hidden border-4 border-emerald-600 shadow-xl flex items-center justify-center group relative">
-                                <User size={80} className="text-emerald-700 group-hover:scale-110 transition-transform" />
-                            </div>
-                            <div className="space-y-4 w-full text-left">
-                                <Input label="Nama Kepala Madrasah" value={madrasah?.nama_kepala || ''} onChange={e => updateField('nama_kepala', e.target.value)} />
-                                <Input label="NIP / NIK" value={madrasah?.nip_kepala || ''} onChange={e => updateField('nip_kepala', e.target.value)} />
+                            <div className="grid grid-cols-2 gap-6 pt-4 border-t-2 border-slate-100">
+                                <Input label="No. Telp Kepala" value={madrasah?.telp_kepala || ''} onChange={e => updateField('telp_kepala', e.target.value)} />
+                                <Input label="Email Madrasah" value={madrasah?.email_madrasah || ''} onChange={e => updateField('email_madrasah', e.target.value)} />
                             </div>
                         </div>
                     </Card>

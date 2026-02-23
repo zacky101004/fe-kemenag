@@ -1,0 +1,23 @@
+export const KECAMATAN_KAMPAR = [
+    "BANGKINANG KOTA",
+    "BANGKINANG",
+    "KAMPAR",
+    "KAMPA",
+    "KAMPAR UTARA",
+    "KAMPAR KIRI",
+    "KAMPAR KIRI HULU",
+    "KAMPAR KIRI HILIR",
+    "KAMPAR KIRI TENGAH",
+    "RUMBIO JAYA",
+    "SALO",
+    "SIAK HULU",
+    "TAMBANG",
+    "TAPUNG",
+    "TAPUNG HILIR",
+    "TAPUNG HULU",
+    "PERHENTIAN RAJA",
+    "KUOK",
+    "KOTO KAMPAR HULU",
+    "XIII KOTO KAMPAR",
+    "GUNUNG SAHILAN"
+].sort();

@@ -8,14 +8,11 @@ import {
     FileText,
     School,
     Users,
-    Building2,
-    Wallet,
     Printer,
     LogOut,
-    Settings,
-    Menu
+    Menu,
+    ChevronRight
 } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 interface SidebarProps {
     role: 'operator' | 'admin';
@@ -27,19 +24,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ role, isOpen, setIsOpen }) => 
     const pathname = usePathname();
 
     const operatorLinks = [
-        { href: '/operator/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
-        { href: '/operator/profil', label: 'Profil Madrasah', icon: <School size={20} /> },
-        { href: '/operator/laporan', label: 'Laporan Bulanan', icon: <FileText size={20} /> },
-        // These could be sub-menus or just navigating to the active report. 
-        // For sidebar simplicity, we can keep high level.
+        { href: '/operator/dashboard', label: 'DASHBOARD', icon: <LayoutDashboard size={20} /> },
+        { href: '/operator/profil', label: 'PROFIL MADRASAH', icon: <School size={20} /> },
+        { href: '/operator/laporan', label: 'LAPORAN BULANAN', icon: <FileText size={20} /> },
     ];
 
     const adminLinks = [
-        { href: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
-        { href: '/admin/laporan', label: 'Validasi Laporan', icon: <FileText size={20} /> },
-        { href: '/admin/master/madrasah', label: 'Master Sekolah', icon: <School size={20} /> },
-        { href: '/admin/master/users', label: 'Manajemen User', icon: <Users size={20} /> },
-        { href: '/admin/recap', label: 'Rekapitulasi', icon: <Printer size={20} /> },
+        { href: '/admin/dashboard', label: 'DASHBOARD', icon: <LayoutDashboard size={20} /> },
+        { href: '/admin/laporan', label: 'VALIDASI LAPORAN', icon: <FileText size={20} /> },
+        { href: '/admin/master/madrasah', label: 'MASTER SEKOLAH', icon: <School size={20} /> },
+        { href: '/admin/master/users', label: 'MANAJEMEN USER', icon: <Users size={20} /> },
+        { href: '/admin/recap', label: 'REKAPITULASI', icon: <Printer size={20} /> },
     ];
 
     const links = role === 'operator' ? operatorLinks : adminLinks;
@@ -49,57 +44,79 @@ export const Sidebar: React.FC<SidebarProps> = ({ role, isOpen, setIsOpen }) => 
             {/* Mobile Overlay */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 bg-black/50 z-20 md:hidden"
+                    className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 md:hidden animate-fade-in"
                     onClick={() => setIsOpen(false)}
                 />
             )}
 
             {/* Sidebar */}
             <aside
-                className={`fixed left-0 top-0 h-full bg-white border-r border-slate-200 z-30 transition-all duration-300 ease-in-out ${isOpen ? 'w-64 translate-x-0' : 'w-64 -translate-x-full md:translate-x-0'}`}
+                className={`fixed left-4 top-4 bottom-4 w-72 bg-white border-[3px] border-slate-900 z-50 rounded-[2.5rem] shadow-[8px_8px_0_0_#0f172a] transition-all duration-500 ease-in-out flex flex-col ${isOpen ? 'translate-x-0' : '-translate-x-[calc(100%+2rem)] md:translate-x-0'}`}
             >
-                <div className="p-6 border-b border-slate-100 flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold">
-                        K
-                    </div>
-                    <div>
-                        <h1 className="font-bold text-slate-800">SI-EMIS</h1>
-                        <p className="text-xs text-slate-500">Kemenag Reports</p>
+                {/* Logo Section */}
+                <div className="p-8 pb-6 border-b-2 border-slate-100">
+                    <div className="flex flex-col items-center text-center gap-3">
+                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 border-[3px] border-slate-900 flex items-center justify-center text-white shadow-[6px_6px_0_0_#0f172a] transition-transform hover:scale-105">
+                            <School size={32} strokeWidth={2.5} />
+                        </div>
+                        <div>
+                            <h1 className="font-black text-slate-900 leading-none tracking-tight text-3xl italic">
+                                SI-EMIS
+                            </h1>
+                            <p className="text-[11px] font-black text-emerald-600 uppercase tracking-[0.15em] leading-none mt-2">
+                                KEMENAG KAB. KAMPAR
+                            </p>
+                        </div>
                     </div>
                 </div>
 
-                <nav className="p-4 space-y-1 overflow-y-auto h-[calc(100%-80px)]">
+                {/* Navigation */}
+                <nav className="flex-1 px-4 py-6 space-y-3 overflow-y-auto no-scrollbar">
+                    <p className="px-4 text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">MENU UTAMA</p>
                     {links.map((link) => {
                         const isActive = pathname.startsWith(link.href);
                         return (
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors ${isActive
-                                    ? 'bg-emerald-50 text-emerald-700 font-semibold'
-                                    : 'text-slate-600 hover:bg-slate-50'
+                                onClick={() => { if (window.innerWidth < 768) setIsOpen(false); }}
+                                className={`group flex items-center justify-between px-5 py-4 rounded-2xl transition-all duration-300 relative
+                                    ${isActive
+                                        ? 'bg-slate-900 text-white shadow-lg translate-x-1'
+                                        : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900 hover:translate-x-1'
                                     }`}
                             >
-                                {link.icon}
-                                <span>{link.label}</span>
+                                <div className="flex items-center gap-4">
+                                    <span className={`${isActive ? 'text-emerald-400' : 'text-slate-400 group-hover:text-emerald-500'} transition-colors`}>
+                                        {link.icon}
+                                    </span>
+                                    <span className="text-[11px] font-black uppercase tracking-widest">{link.label}</span>
+                                </div>
+                                {isActive && <ChevronRight size={14} className="text-emerald-400" />}
                             </Link>
                         );
                     })}
-
-                    <div className="pt-8 mt-8 border-t border-slate-100">
-                        <button
-                            onClick={() => {
-                                if (confirm('Apakah Anda yakin ingin keluar?')) {
-                                    window.location.href = '/';
-                                }
-                            }}
-                            className="w-full flex items-center gap-3 px-4 py-3 text-slate-800 font-bold hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors border-2 border-transparent hover:border-red-200"
-                        >
-                            <LogOut size={24} className="text-red-600" />
-                            <span>Keluar</span>
-                        </button>
-                    </div>
                 </nav>
+
+                {/* Footer Section */}
+                <div className="p-6 border-t-2 border-slate-100">
+                    <div className="bg-slate-50 p-4 rounded-3xl border-2 border-slate-100 mb-4">
+                        <p className="text-[9px] font-bold text-slate-400 uppercase leading-none mb-1">Role Sebagai</p>
+                        <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{role === 'admin' ? 'Validator Pusat' : 'Operator Madrasah'}</p>
+                    </div>
+
+                    <button
+                        onClick={() => {
+                            if (confirm('Konfirmasi Keluar dari Sistem?')) {
+                                window.location.href = '/';
+                            }
+                        }}
+                        className="w-full flex items-center justify-center gap-3 px-6 py-4 text-slate-900 font-black text-[11px] uppercase tracking-widest transition-all rounded-2xl bg-white border-2 border-slate-100 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200"
+                    >
+                        <LogOut size={18} />
+                        <span>KELUAR AKSES</span>
+                    </button>
+                </div>
             </aside>
         </>
     );

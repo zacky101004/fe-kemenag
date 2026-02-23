@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Plus, Search, Edit, Trash2, Key, Save, X, Loader2, Shield } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Key, Save, X, Loader2, Shield, ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { api } from '@/lib/api';
@@ -118,8 +118,11 @@ export default function MasterUsersPage() {
 
     return (
         <div className="space-y-8 pb-10">
-            <div className="flex items-center justify-between">
-                <h1 className="text-3xl font-black text-slate-900 uppercase">Manajemen User</h1>
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div>
+                    <h1 className="text-slate-900 italic">Manajemen User</h1>
+                    <p className="text-muted text-sm uppercase mt-2">Atur hak akses dan akun pengguna sistem madrasah.</p>
+                </div>
                 <Button
                     variant="primary"
                     className="py-4 px-8 text-lg font-black bg-emerald-700 shadow-xl"
@@ -143,15 +146,20 @@ export default function MasterUsersPage() {
                     </div>
                     <div className="w-full md:w-64">
                         <label className="input-label">Filter Akses</label>
-                        <select
-                            className="select-field border-2"
-                            value={roleFilter}
-                            onChange={(e) => setRoleFilter(e.target.value)}
-                        >
-                            <option value="Semua Role">Semua Role</option>
-                            <option value="operator_sekolah">Operator Sekolah</option>
-                            <option value="kasi_penmad">Admin (Kasi Penmad)</option>
-                        </select>
+                        <div className="relative group">
+                            <select
+                                className="select-field border-2 appearance-none pr-12 cursor-pointer transition-all hover:border-emerald-500"
+                                value={roleFilter}
+                                onChange={(e) => setRoleFilter(e.target.value)}
+                            >
+                                <option value="Semua Role">Semua Role</option>
+                                <option value="operator_sekolah">Operator Sekolah</option>
+                                <option value="kasi_penmad">Admin (Kasi Penmad)</option>
+                            </select>
+                            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-hover:text-emerald-600 transition-colors">
+                                <ChevronDown size={20} />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
