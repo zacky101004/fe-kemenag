@@ -45,7 +45,7 @@ export default function DetailMadrasahPage() {
                 setSchool(data);
             } else {
                 alert('Gagal mengambil data madrasah');
-                router.push('/admin/master/madrasah');
+                router.push('/staff/master/madrasah');
             }
         } catch (error) {
             alert('Terjadi kesalahan koneksi');
@@ -249,10 +249,10 @@ export default function DetailMadrasahPage() {
                                 {school.users.map((user: any) => (
                                     <div key={user.id} className="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/10 hover:bg-white/20 transition-colors">
                                         <div className="flex items-center gap-3 mb-2">
-                                            <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-xs uppercase">
-                                                {user.name ? user.name.substring(0, 2) : 'OP'}
+                                            <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-xs">
+                                                OP
                                             </div>
-                                            <p className="font-bold text-sm tracking-wide uppercase">{user.name || user.username}</p>
+                                            <p className="font-bold text-sm tracking-wide">{user.username}</p>
                                         </div>
                                         <div className="flex justify-between items-center text-xs text-slate-400 pl-11">
                                             <span className="uppercase tracking-widest font-bold tracking-tighter">{user.role?.replace('_', ' ')}</span>
@@ -270,7 +270,7 @@ export default function DetailMadrasahPage() {
                         <div className="mt-8 pt-6 border-t border-white/10 relative z-10">
                             <Button
                                 className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3"
-                                onClick={() => router.push('/admin/master/users')} // Direct to user management
+                                onClick={() => router.push('/staff/master/users')} // Direct to user management
                             >
                                 KELOLA OPERATOR
                             </Button>
@@ -278,7 +278,7 @@ export default function DetailMadrasahPage() {
                     </div>
                 </div>
             </div>
-
         </div>
     );
 }
+

@@ -11,11 +11,12 @@ import {
     Printer,
     LogOut,
     Menu,
-    ChevronRight
+    ChevronRight,
+    Shield
 } from 'lucide-react';
 
 interface SidebarProps {
-    role: 'operator' | 'admin';
+    role: 'operator_sekolah' | 'staff_penmad' | 'kasi_penmad';
     isOpen: boolean;
     setIsOpen: (open: boolean) => void;
 }
@@ -26,18 +27,32 @@ export const Sidebar: React.FC<SidebarProps> = ({ role, isOpen, setIsOpen }) => 
     const operatorLinks = [
         { href: '/operator/dashboard', label: 'DASHBOARD', icon: <LayoutDashboard size={20} /> },
         { href: '/operator/profil', label: 'PROFIL MADRASAH', icon: <School size={20} /> },
-        { href: '/operator/laporan', label: 'LAPORAN BULANAN', icon: <FileText size={20} /> },
+        { href: '/operator/laporan', label: 'LAPORAN SAYA', icon: <FileText size={20} /> },
     ];
 
-    const adminLinks = [
-        { href: '/admin/dashboard', label: 'DASHBOARD', icon: <LayoutDashboard size={20} /> },
-        { href: '/admin/laporan', label: 'VALIDASI LAPORAN', icon: <FileText size={20} /> },
-        { href: '/admin/master/madrasah', label: 'MASTER SEKOLAH', icon: <School size={20} /> },
-        { href: '/admin/master/users', label: 'MANAJEMEN USER', icon: <Users size={20} /> },
+    const staffLinks = [
+        { href: '/staff/dashboard', label: 'DASHBOARD KERJA', icon: <LayoutDashboard size={20} /> },
+        { href: '/staff/laporan', label: 'VALIDASI LAPORAN', icon: <FileText size={20} /> },
+        { href: '/staff/master/madrasah', label: 'MASTER MADRASAH', icon: <School size={20} /> },
+        { href: '/staff/master/users', label: 'KELOLA USER', icon: <Users size={20} /> },
+    ];
+
+    const kasiLinks = [
+        { href: '/admin/dashboard', label: 'RADAR MONITORING', icon: <LayoutDashboard size={20} /> },
+        { href: '/admin/laporan', label: 'RADAR PENGAWASAN', icon: <FileText size={20} /> },
+        { href: '/admin/master/madrasah', label: 'DATABASE MADRASAH', icon: <School size={20} /> },
+        { href: '/admin/master/users', label: 'KELOLA AKUN SISTEM', icon: <Users size={20} /> },
         { href: '/admin/recap', label: 'REKAPITULASI', icon: <Printer size={20} /> },
+        { href: '/admin/audit', label: 'AUDIT JEJAK DIGITAL', icon: <Shield size={20} /> },
     ];
 
-    const links = role === 'operator' ? operatorLinks : adminLinks;
+    const links = role === 'operator_sekolah' ? operatorLinks
+        : role === 'staff_penmad' ? staffLinks
+            : kasiLinks;
+
+    const roleLabel = role === 'kasi_penmad' ? 'KASI PENMAD (PIMPINAN)'
+        : role === 'staff_penmad' ? 'STAF DATA (VERIFIKATOR)'
+            : 'OPERATOR MADRASAH';
 
     return (
         <>
@@ -102,7 +117,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ role, isOpen, setIsOpen }) => 
                 <div className="p-6 border-t-2 border-slate-100">
                     <div className="bg-slate-50 p-4 rounded-3xl border-2 border-slate-100 mb-4">
                         <p className="text-[9px] font-bold text-slate-400 uppercase leading-none mb-1">Role Sebagai</p>
-                        <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{role === 'admin' ? 'Validator Pusat' : 'Operator Madrasah'}</p>
+                        <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{roleLabel}</p>
                     </div>
 
                     <button
@@ -111,10 +126,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ role, isOpen, setIsOpen }) => 
                                 window.location.href = '/';
                             }
                         }}
-                        className="w-full flex items-center justify-center gap-3 px-6 py-4 text-slate-900 font-black text-[11px] uppercase tracking-widest transition-all rounded-2xl bg-white border-2 border-slate-100 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200"
+                        className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-rose-500 font-black text-[11px] uppercase tracking-widest hover:bg-rose-50 transition-all border-2 border-transparent hover:border-rose-100 group"
                     >
-                        <LogOut size={18} />
-                        <span>KELUAR AKSES</span>
+                        <LogOut size={20} className="group-hover:rotate-12 transition-transform" />
+                        <span>LOGOUT</span>
                     </button>
                 </div>
             </aside>

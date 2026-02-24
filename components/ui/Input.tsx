@@ -1,19 +1,21 @@
 import React from 'react';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-    label: string;
+    label?: string;
     error?: string;
     icon?: React.ReactNode;
 }
 
 export const Input: React.FC<InputProps> = ({ label, error, className, id, icon, ...props }) => {
-    const inputId = id || label.toLowerCase().replace(/\s+/g, '-');
+    const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : Math.random().toString(36).substr(2, 9));
 
     return (
         <div className={`input-group ${className || ''}`}>
-            <label htmlFor={inputId} className="input-label">
-                {label}
-            </label>
+            {label && (
+                <label htmlFor={inputId} className="input-label">
+                    {label}
+                </label>
+            )}
             <div className="relative flex items-center w-full">
                 {icon && (
                     <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-700 z-10 flex items-center justify-center pointer-events-none">

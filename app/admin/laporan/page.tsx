@@ -1,30 +1,33 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Eye, Search, Loader2, Calendar, Trash2, RotateCcw, Archive, ChevronDown } from 'lucide-react';
-import { Input } from '@/components/ui/Input';
+import {
+    CheckCircle,
+    XCircle,
+    Clock,
+    Eye,
+    Loader2,
+    MapPin
+} from 'lucide-react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 
-export default function AdminLaporanPage() {
-    const [searchQuery, setSearchQuery] = useState('');
-    const [statusFilter, setStatusFilter] = useState('Semua Status');
+export default function KasiLaporanPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [submissions, setSubmissions] = useState<any[]>([]);
-    const [showTrashed, setShowTrashed] = useState(false);
 
     const fetchSubmissions = async () => {
         setIsLoading(true);
         try {
-            const response = await api.admin.getLaporan({ trashed: showTrashed ? 1 : 0 });
+            const response = await api.admin.getLaporan({ trashed: 0 });
             const data = await response.json();
             if (response.ok) {
                 setSubmissions(data.data || data);
             }
         } catch (error) {
-            console.error('Failed to fetch submissions:', error);
+            console.error('Failed to fetch:', error);
         } finally {
             setIsLoading(false);
         }
@@ -32,23 +35,7 @@ export default function AdminLaporanPage() {
 
     useEffect(() => {
         fetchSubmissions();
-    }, [showTrashed]);
-
-    const filteredSubmissions = useMemo(() => {
-        return submissions.filter(sub => {
-            const schoolName = sub.madrasah?.nama_madrasah || '';
-            const nsm = sub.madrasah?.npsn || '';
-            const status = sub.status_laporan || '';
-
-            const matchesSearch = schoolName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                nsm.includes(searchQuery);
-
-            const matchesStatus = statusFilter === 'Semua Status' ||
-                status.toLowerCase() === statusFilter.toLowerCase();
-
-            return matchesSearch && matchesStatus;
-        });
-    }, [searchQuery, statusFilter, submissions]);
+    }, []);
 
     const formatBulan = (dateStr: string) => {
         if (!dateStr) return '-';
@@ -57,187 +44,89 @@ export default function AdminLaporanPage() {
     };
 
     return (
-        <div className="space-y-10 animate-fade-in">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div>
-                    <h1 className="text-slate-900 italic">
-                        Validasi Laporan {showTrashed && '(TEMPAT SAMPAH)'}
-                    </h1>
-                    <p className="text-muted text-sm uppercase mt-2 pl-2">
-                        Daftar masuk laporan madrasah
-                    </p>
-                </div>
-                <Button
-                    variant={showTrashed ? 'primary' : 'outline'}
-                    icon={<Trash2 size={20} />}
-                    onClick={() => setShowTrashed(!showTrashed)}
-                >
-                    {showTrashed ? 'TAMPIL DATA' : 'TEMPAT SAMPAH'}
-                </Button>
-            </div>
+        <div className="space-y-6 animate-fade-in -mt-6">
+
 
             <Card>
-                <div className="flex flex-col md:flex-row gap-8 mb-12 items-end">
-                    <div className="flex-1">
-                        <Input
-                            label="Cari Madrasah"
-                            placeholder="Nama sekolah atau NPSN..."
-                            icon={<Search size={22} />}
-                            className="mb-0"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </div>
-                    <div className="w-full md:w-72 relative">
-                        <label className="input-label">Filter Status Laporan</label>
-                        <div className="relative">
-                            <select
-                                className="select-field appearance-none cursor-pointer"
-                                value={statusFilter}
-                                onChange={(e) => setStatusFilter(e.target.value)}
-                            >
-                                <option value="Semua Status">Semua Status</option>
-                                <option value="submitted">MENUNGGU VALIDASI</option>
-                                <option value="revisi">REVISI</option>
-                                <option value="verified">DISETUJUI</option>
-                            </select>
-                            <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                                <ChevronDown size={20} strokeWidth={3} />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="table-container relative min-h-[400px]">
-                    {isLoading && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-sm z-10 transition-all">
-                            <Loader2 className="animate-spin text-emerald-700" size={64} />
-                        </div>
-                    )}
-
-                    <table>
+                <div className="overflow-x-auto -mx-10 px-10">
+                    <table className="w-full text-left border-collapse min-w-[900px]">
                         <thead>
-                            <tr>
-                                <th>MADRASAH</th>
-                                <th>BULAN LAPORAN</th>
-                                <th>TANGGAL KIRIM</th>
-                                <th>STATUS</th>
-                                <th className="text-right">AKSI</th>
+                            <tr className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                                <th className="px-6 py-6 border-b-2 border-slate-300">Madrasah & Lokasi</th>
+                                <th className="px-6 py-6 border-b-2 border-slate-300">Periode Laporan</th>
+                                <th className="px-6 py-6 border-b-2 border-slate-300">Status Terkini</th>
+                                <th className="px-6 py-6 border-b-2 border-slate-300">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100">
-                            {filteredSubmissions.map((item) => (
-                                <tr key={item.id_laporan} className="group">
-                                    <td className="text-left">
-                                        <div className="font-black text-slate-900 text-lg uppercase tracking-tighter group-hover:text-emerald-700 transition-colors">
-                                            {item.madrasah?.nama_madrasah ?? 'MADRASAH'}
-                                        </div>
-                                        <div className="text-[11px] font-black text-slate-400 mt-1 uppercase tracking-widest leading-none">
-                                            NPSN / NSM: {item.madrasah?.npsn ?? '-'}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div className="inline-flex items-center gap-2 font-black text-slate-600 bg-slate-100 px-4 py-2.5 rounded-xl text-[11px] uppercase whitespace-nowrap">
-                                            <Calendar size={14} className="text-slate-400" />
-                                            {formatBulan(item.bulan_tahun)}
-                                        </div>
-                                    </td>
-                                    <td className="text-slate-400 font-bold text-sm">
-                                        {item.submitted_at ? new Date(item.submitted_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}
-                                    </td>
-                                    <td>
-                                        <span className={`px-5 py-2.5 rounded-xl font-black text-[11px] border-2 uppercase tracking-[0.1em] shadow-sm inline-block
-                                            ${item.status_laporan === 'submitted' ? 'bg-amber-100 text-amber-900 border-amber-400' :
-                                                item.status_laporan === 'revisi' ? 'bg-rose-100 text-rose-900 border-rose-400' :
-                                                    item.status_laporan === 'verified' ? 'bg-emerald-100 text-emerald-900 border-emerald-400' :
-                                                        'bg-slate-100 text-slate-900 border-slate-400'
-                                            }`}
-                                        >
-                                            {item.status_laporan === 'submitted' ? 'MENUNGGU' :
-                                                item.status_laporan === 'revisi' ? 'REVISI' :
-                                                    item.status_laporan === 'verified' ? 'DISETUJUI' :
-                                                        item.status_laporan}
-                                        </span>
-                                    </td>
-                                    <td className="text-right py-4">
-                                        <div className="flex flex-col items-end gap-2">
-                                            {!showTrashed ? (
-                                                <div className="flex flex-col gap-1.5 w-full max-w-[120px]">
-                                                    <Link href={`/admin/laporan/${item.id_laporan}`} className="w-full">
-                                                        <Button
-                                                            variant="primary"
-                                                            className="w-full !px-0 !py-2 !text-[10px] !font-black !tracking-wider"
-                                                        >
-                                                            VALIDASI
-                                                        </Button>
-                                                    </Link>
-                                                    <Button
-                                                        variant="outline"
-                                                        className="w-full !px-0 !py-2 !text-rose-500 !border-rose-200 hover:!bg-rose-50 !text-[10px] !font-black"
-                                                        icon={<Trash2 size={14} />}
-                                                        onClick={async () => {
-                                                            if (item.status_laporan !== 'verified') {
-                                                                alert('Laporan harus di-approve atau reject (revisi) terlebih dahulu sebelum bisa dihapus.');
-                                                                return;
-                                                            }
-                                                            if (confirm('Pindahkan ke tempat sampah?')) {
-                                                                try {
-                                                                    const res = await api.admin.deleteLaporan(item.id_laporan);
-                                                                    if (res.ok) fetchSubmissions();
-                                                                } catch (e) { alert('Kesalahan koneksi'); }
-                                                            }
-                                                        }}
-                                                        disabled={item.status_laporan !== 'verified'}
-                                                    >
-                                                        HAPUS
-                                                    </Button>
-                                                </div>
-                                            ) : (
-                                                <div className="flex flex-col gap-1.5 w-full max-w-[120px]">
-                                                    <Button
-                                                        variant="outline"
-                                                        className="w-full !px-0 !py-2 !bg-emerald-50 !text-emerald-700 !border-emerald-200 !text-[10px] !font-black"
-                                                        icon={<RotateCcw size={14} />}
-                                                        onClick={async () => {
-                                                            if (confirm('Restore laporan?')) {
-                                                                try {
-                                                                    const res = await api.admin.restoreLaporan(item.id_laporan);
-                                                                    if (res.ok) fetchSubmissions();
-                                                                } catch (e) { alert('Kesalahan koneksi'); }
-                                                            }
-                                                        }}
-                                                    >
-                                                        RESTORE
-                                                    </Button>
-                                                    <Button
-                                                        variant="danger"
-                                                        className="w-full !px-0 !py-2 !text-[10px] !font-black"
-                                                        icon={<Trash2 size={14} />}
-                                                        onClick={async () => {
-                                                            if (confirm('Hapus permanen?')) {
-                                                                try {
-                                                                    const res = await api.admin.permanentDeleteLaporan(item.id_laporan);
-                                                                    if (res.ok) fetchSubmissions();
-                                                                } catch (e) { alert('Kesalahan koneksi'); }
-                                                            }
-                                                        }}
-                                                    >
-                                                        HAPUS
-                                                    </Button>
-                                                </div>
-                                            )}
-                                        </div>
+                        <tbody className="divide-y-2 divide-slate-100">
+                            {isLoading ? (
+                                <tr>
+                                    <td colSpan={4} className="py-20 text-center">
+                                        <Loader2 className="animate-spin mx-auto text-emerald-600 mb-4" size={48} />
+                                        <p className="font-black text-slate-300 uppercase tracking-widest italic text-center">Menghubungkan Radar Monitoring...</p>
                                     </td>
                                 </tr>
-                            ))}
+                            ) : submissions.length === 0 ? (
+                                <tr>
+                                    <td colSpan={4} className="py-20 text-center">
+                                        <p className="font-black text-slate-300 uppercase tracking-widest italic opacity-40 text-xl text-center">Belum ada laporan masuk</p>
+                                    </td>
+                                </tr>
+                            ) : (
+                                submissions.map((item) => (
+                                    <tr key={item.id_laporan} className="group hover:bg-slate-50 transition-colors">
+                                        <td className="px-6 py-8 text-center">
+                                            <div className="inline-flex items-center gap-4 text-left">
+                                                <div className="w-14 h-14 rounded-2xl bg-white border-[3px] border-slate-900 flex items-center justify-center font-black italic text-lg shadow-[4px_4px_0_0_#0f172a] group-hover:bg-emerald-50 transition-colors shrink-0">
+                                                    {item.madrasah?.nama_madrasah?.substring(0, 2) || 'MI'}
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="font-black text-slate-900 text-base uppercase leading-tight mb-1 tracking-tighter italic">
+                                                        {item.madrasah?.nama_madrasah}
+                                                    </span>
+                                                    <span className="text-[10px] font-bold text-slate-400 uppercase flex items-center gap-1.5 leading-none">
+                                                        <MapPin size={12} className="text-emerald-600" />
+                                                        {item.madrasah?.kecamatan || 'Kecamatan -'}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-8 text-center">
+                                            <div className="inline-flex flex-col items-center">
+                                                <span className="font-black text-slate-900 text-sm italic mb-1 uppercase">{formatBulan(item.bulan_tahun)}</span>
+                                                <span className="text-[10px] font-bold text-slate-400 uppercase flex items-center gap-1.5 leading-none">
+                                                    <Clock size={12} className="text-emerald-600" />
+                                                    {item.submitted_at ? new Date(item.submitted_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : 'Belum Submit'}
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-10">
+                                            <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black border-2 uppercase tracking-widest
+                                                ${item.status_laporan === 'verified' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                                    item.status_laporan === 'revisi' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                                                        'bg-amber-50 text-amber-700 border-amber-200'}`}>
+                                                {item.status_laporan === 'verified' ? <CheckCircle size={14} /> :
+                                                    item.status_laporan === 'revisi' ? <XCircle size={14} /> :
+                                                        <Clock size={14} />}
+                                                {item.status_laporan}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-10">
+                                            <Link href={`/admin/laporan/${item.id_laporan}`}>
+                                                <Button
+                                                    variant="outline"
+                                                    icon={<Eye size={18} />}
+                                                    className="!text-[10px] !font-black !tracking-widest uppercase border-2 shadow-sm"
+                                                >
+                                                    LIHAT DETAIL
+                                                </Button>
+                                            </Link>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
-
-                    {!isLoading && filteredSubmissions.length === 0 && (
-                        <div className="py-40 text-center text-slate-300 font-extrabold text-2xl uppercase italic opacity-30 tracking-widest">
-                            {showTrashed ? 'Tempat Sampah Kosong.' : 'Daftar Kosong.'}
-                        </div>
-                    )}
                 </div>
             </Card>
         </div>

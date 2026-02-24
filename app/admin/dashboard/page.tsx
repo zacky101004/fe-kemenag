@@ -1,264 +1,265 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
-import { FileCheck, FileClock, FileWarning, School, Loader2, TrendingUp, MapPin, Send, Trash2, Megaphone } from 'lucide-react';
-import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import {
+    Megaphone,
+    Search,
+    Send,
+    Trash2,
+    Loader2,
+    Calendar,
+    MapPin,
+    ArrowUpRight,
+    Users,
+    TrendingUp,
+    Shield,
+    ShieldCheck
+} from 'lucide-react';
+import { Input } from '@/components/ui/Input';
 import { api } from '@/lib/api';
 
-export default function AdminDashboard() {
+export default function KasiDashboard() {
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [announcements, setAnnouncements] = useState<any[]>([]);
-    const [announcementForm, setAnnouncementForm] = useState({ judul: '', isi: '' });
-
+    const [activityLogs, setActivityLogs] = useState<any[]>([]);
     const [stats, setStats] = useState<any>({
         total_madrasah: 0,
         laporan_masuk: 0,
         terverifikasi: 0,
-        perlu_revisi: 0,
-        recent_submissions: [],
-        kecamatan_progress: []
+        recent_submissions: []
     });
 
-    const fetchStats = async () => {
+    const [newAnnouncement, setNewAnnouncement] = useState({
+        judul: '',
+        isi_info: ''
+    });
+
+    const fetchDashData = async () => {
         setIsLoading(true);
         try {
-            // Fetch Stats
-            const response = await api.admin.getStats();
-            const data = await response.json();
-            if (response.ok) {
-                const d = data.data || data;
+            const [statsRes, annRes, logRes] = await Promise.all([
+                api.admin.getStats(),
+                api.master.getPengumuman(),
+                api.admin.getActivityLogs()
+            ]);
+
+            if (statsRes.ok) {
+                const data = await statsRes.json();
+                const submissions = data.recent_submissions || data.data?.recent_submissions || [];
                 setStats({
-                    total_madrasah: d.total_madrasah || 0,
-                    laporan_masuk: d.laporan_masuk || 0,
-                    terverifikasi: d.terverifikasi || 0,
-                    perlu_revisi: d.perlu_revisi || 0,
-                    recent_submissions: d.recent_submissions || [],
-                    kecamatan_progress: d.kecamatan_progress || []
+                    total_madrasah: data.total_madrasah || 0,
+                    laporan_masuk: data.laporan_masuk || 0,
+                    terverifikasi: data.terverifikasi || 0,
+                    recent_submissions: Array.isArray(submissions) ? submissions : []
                 });
             }
 
-            // Fetch Announcements
-            const annResponse = await api.master.getPengumuman();
-            const annData = await annResponse.json();
-            if (annResponse.ok) {
-                setAnnouncements(annData.data || annData);
+            if (annRes.ok) {
+                const data = await annRes.json();
+                setAnnouncements(data.data || data);
             }
 
+            if (logRes.ok) {
+                const data = await logRes.json();
+                setActivityLogs(data.data || data);
+            }
         } catch (error) {
-            console.error('Failed to fetch data:', error);
+            console.error('Failed to fetch dashboard data:', error);
         } finally {
             setIsLoading(false);
         }
     };
 
-    const handleCreateAnnouncement = async () => {
-        if (!announcementForm.judul || !announcementForm.isi) return alert('Mohon lengkapi judul dan isi pengumuman');
+    useEffect(() => {
+        fetchDashData();
+    }, []);
+
+    const handleCreateAnnouncement = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newAnnouncement.judul || !newAnnouncement.isi_info) return;
 
         setIsSubmitting(true);
         try {
-            const response = await api.admin.createPengumuman({
-                judul: announcementForm.judul,
-                isi_info: announcementForm.isi,
-                target_role: 'operator'
-            });
-
-            if (response.ok) {
-                setAnnouncementForm({ judul: '', isi: '' });
-                fetchStats(); // Refresh data
-                alert('Pengumuman berhasil diterbitkan!');
-            } else {
-                alert('Gagal membuat pengumuman');
+            const res = await api.admin.createPengumuman(newAnnouncement);
+            if (res.ok) {
+                setNewAnnouncement({ judul: '', isi_info: '' });
+                const updatedAnn = await api.master.getPengumuman();
+                if (updatedAnn.ok) {
+                    const data = await updatedAnn.json();
+                    setAnnouncements(data.data || data);
+                }
             }
         } catch (error) {
-            alert('Terjadi kesalahan saat membuat pengumuman');
+            console.error('Failed to create announcement:', error);
         } finally {
             setIsSubmitting(false);
         }
     };
 
     const handleDeleteAnnouncement = async (id: number) => {
-        if (!confirm('Hapus pengumuman ini?')) return;
+        if (!confirm('Hapus instruksi ini?')) return;
         try {
-            const response = await api.admin.deletePengumuman(id);
-            if (response.ok) fetchStats();
+            const res = await api.admin.deletePengumuman(id);
+            if (res.ok) {
+                setAnnouncements(announcements.filter(a => a.id !== id));
+            }
         } catch (error) {
-            alert('Gagal menghapus');
+            console.error('Failed to delete announcement:', error);
         }
     };
-
-    useEffect(() => {
-        fetchStats();
-    }, []);
 
     if (isLoading) {
         return (
             <div className="h-[60vh] flex flex-col items-center justify-center gap-4 animate-fade-in">
                 <Loader2 className="animate-spin text-emerald-700" size={64} />
-                <p className="font-black text-slate-900 uppercase tracking-widest text-sm">Memuat Statistik Real-time...</p>
+                <p className="font-black text-slate-900 uppercase tracking-widest text-sm text-center">Menyusun Radar Monitoring Pimpinan...</p>
             </div>
         );
     }
 
     return (
-        <div className="space-y-12 animate-fade-in">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                <div>
-                    <h1 className="text-slate-900 italic">Dashboard Monitoring</h1>
-                    <p className="text-muted text-sm uppercase mt-2">Overview status laporan madrasah seluruh kabupaten.</p>
+        <div className="space-y-6 animate-fade-in -mt-6 pb-20">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                <div className="lg:col-span-9 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <MiniStatCard label="Database Madrasah" value={stats.total_madrasah} icon={<Users size={20} />} trend="+2 Baru" />
+                    <MiniStatCard label="Trafik Laporan" value={stats.laporan_masuk} icon={<TrendingUp size={20} />} trend="Bulan Ini" />
+                    <MiniStatCard label="Validasi Final" value={stats.terverifikasi} icon={<Shield size={20} />} trend="Audited" />
+                    <MiniStatCard label="Kecamatan" value="22" icon={<MapPin size={20} />} trend="Kampar" />
                 </div>
-                <div className="flex items-center gap-4 bg-white border-2 border-slate-900 px-6 py-3 rounded-2xl shadow-[4px_4px_0_0_#0f172a]">
-                    <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-700">
-                        <TrendingUp size={24} />
-                    </div>
-                    <div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Update Terakhir</p>
-                        <p className="text-xs font-black text-slate-900 uppercase">Hari ini, {new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</p>
-                    </div>
-                </div>
-            </div>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-                <StatsCard
-                    label="Total Madrasah"
-                    value={stats.total_madrasah}
-                    icon={<School size={32} />}
-                    color="blue"
-                />
-                <StatsCard
-                    label="Laporan Masuk"
-                    value={stats.laporan_masuk}
-                    icon={<FileClock size={32} />}
-                    color="amber"
-                />
-                <StatsCard
-                    label="Terverifikasi"
-                    value={stats.terverifikasi}
-                    icon={<FileCheck size={32} />}
-                    color="emerald"
-                />
-                <StatsCard
-                    label="Pengumuman"
-                    value={announcements.length}
-                    icon={<Megaphone size={32} />}
-                    color="blue"
-                />
-            </div>
-
-            {/* Content Area */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                <div className="lg:col-span-5">
-                    <Card title="LAPORAN TERBARU MASUK" className="h-full">
-                        <div className="space-y-6">
-                            {stats.recent_submissions.length > 0 ? (
-                                stats.recent_submissions.map((report: any, idx: number) => (
-                                    <div key={idx} className="flex items-center justify-between p-6 hover:bg-slate-50 rounded-[2rem] transition-all border-b-2 border-slate-50 last:border-0 group">
-                                        <div className="flex items-center gap-5">
-                                            <div className="w-16 h-16 rounded-full bg-white border-2 border-slate-900 flex items-center justify-center text-slate-900 font-black text-xs group-hover:bg-slate-50 transition-colors uppercase italic shadow-[4px_4px_0_0_#0f172a] shrink-0 aspect-square">
-                                                {report.madrasah?.nama_madrasah?.substring(0, 2) || 'MI'}
-                                            </div>
-                                            <div>
-                                                <p className="font-black text-xl text-slate-900 tracking-tighter uppercase leading-none mb-2">
-                                                    {report.madrasah?.nama_madrasah}
-                                                </p>
-                                                <div className="flex items-center gap-2 text-slate-400 font-bold text-[10px] uppercase">
-                                                    <MapPin size={12} />
-                                                    {report.madrasah?.kecamatan || 'Lokasi tidak tersedia'}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="text-right">
-                                            <span className={`px-4 py-2 rounded-full text-[11px] font-black border uppercase tracking-widest
-                                                ${report.status_laporan === 'verified' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                                                    report.status_laporan === 'revisi' ? 'bg-rose-50 text-rose-700 border-rose-200' :
-                                                        'bg-amber-50 text-amber-700 border-amber-200'}`}>
-                                                {report.status_laporan}
-                                            </span>
-                                            <p className="text-[11px] font-black text-slate-300 mt-2 uppercase tracking-widest">
-                                                {new Date(report.updated_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}
-                                            </p>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="py-20 text-center font-black text-slate-300 uppercase italic opacity-30 tracking-widest text-xl">Belum ada laporan masuk.</div>
-                            )}
+                <div className="lg:col-span-3 flex flex-col justify-center bg-slate-900 border-[3px] border-slate-900 p-6 rounded-[2rem] shadow-[6px_6px_0_0_#10b981] relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                    <div className="flex items-center gap-4 relative z-10">
+                        <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center text-slate-900 shadow-[4px_4px_0_0_#ffffff20]">
+                            <ShieldCheck size={24} />
                         </div>
-                    </Card>
+                        <div>
+                            <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest leading-none mb-1">Otoritas</p>
+                            <p className="text-sm font-black text-white uppercase tracking-tight">Level Pimpinan</p>
+                        </div>
+                    </div>
                 </div>
+            </div>
 
-                <div className="lg:col-span-7">
-                    <Card title="BUAT PENGUMUMAN" className="h-full">
-                        {/* Form Input */}
-                        <div className="bg-slate-50 p-6 rounded-[2rem] border-2 border-slate-100 space-y-4">
-                            <Input
-                                label="Judul Pengumuman"
-                                placeholder="Contoh: Jadwal Pelaporan Bulan Februari"
-                                value={announcementForm.judul}
-                                onChange={(e) => setAnnouncementForm({ ...announcementForm, judul: e.target.value })}
-                            />
-                            {/* Textarea custom */}
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Isi Pengumuman</label>
-                                <textarea
-                                    className="w-full min-h-[120px] p-4 bg-white border-2 border-slate-200 rounded-2xl text-slate-900 font-bold text-sm focus:outline-none focus:border-emerald-500 transition-all placeholder:font-normal placeholder:text-slate-300 resize-none"
-                                    placeholder="Tulis informasi penting untuk operator madrasah..."
-                                    value={announcementForm.isi}
-                                    onChange={(e) => setAnnouncementForm({ ...announcementForm, isi: e.target.value })}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                <div className="lg:col-span-8 space-y-10">
+                    <Card title="BUAT PENGUMUMAN STRATEGIS">
+                        <form onSubmit={handleCreateAnnouncement} className="space-y-6">
+                            <div className="grid grid-cols-1 gap-6">
+                                <Input
+                                    label="Judul Instruksi"
+                                    placeholder="Contoh: Batas Akhir Laporan Bulan Maret 2026"
+                                    value={newAnnouncement.judul}
+                                    onChange={(e) => setNewAnnouncement({ ...newAnnouncement, judul: e.target.value })}
                                 />
+                                <div className="space-y-2">
+                                    <label className="input-label">Detail Pengumuman / Instruksi Pimpinan</label>
+                                    <textarea
+                                        className="w-full min-h-[150px] p-6 bg-slate-50 border-2 border-slate-100 rounded-[2rem] text-slate-900 font-bold text-sm focus:outline-none focus:border-emerald-500 transition-all resize-none"
+                                        placeholder="Tuliskan detail instruksi untuk seluruh operator madrasah..."
+                                        value={newAnnouncement.isi_info}
+                                        onChange={(e) => setNewAnnouncement({ ...newAnnouncement, isi_info: e.target.value })}
+                                    />
+                                </div>
                             </div>
                             <div className="flex justify-end">
                                 <Button
-                                    className="px-8 bg-slate-900 shadow-xl"
-                                    onClick={handleCreateAnnouncement}
-                                    isLoading={isSubmitting}
-                                    icon={<Send size={18} />}
+                                    variant="primary"
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="!py-5 !px-12 bg-emerald-700 shadow-xl shadow-emerald-200/50"
+                                    icon={<Send size={20} />}
                                 >
-                                    TERBITKAN
+                                    {isSubmitting ? 'MENGIRIM...' : 'PUBLIKASIKAN INSTRUKSI'}
                                 </Button>
                             </div>
+                        </form>
+                    </Card>
+
+                    <Card title="RIWAYAT PENGUMUMAN">
+                        <div className="space-y-6">
+                            {(announcements || []).map((ann, idx) => (
+                                <div key={idx} className="bg-slate-50 p-6 rounded-3xl border-2 border-slate-100 flex items-start justify-between group hover:border-emerald-200 transition-all">
+                                    <div className="flex gap-4">
+                                        <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-slate-900 border-2 border-slate-100 shrink-0">
+                                            <Megaphone size={20} />
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-3 mb-1">
+                                                <h4 className="font-black text-slate-900 uppercase tracking-tight italic">{ann.judul}</h4>
+                                                <span className="text-[10px] font-black text-slate-400 border border-slate-200 px-2 py-0.5 rounded uppercase">
+                                                    {new Date(ann.created_at).toLocaleDateString('id-ID')}
+                                                </span>
+                                            </div>
+                                            <p className="text-sm font-bold text-slate-500 line-clamp-2 italic">{ann.isi_info}</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => handleDeleteAnnouncement(ann.id)}
+                                        className="p-3 bg-white text-slate-400 hover:text-rose-600 hover:bg-rose-50 border-2 border-slate-100 rounded-xl transition-all"
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
+                                </div>
+                            ))}
                         </div>
                     </Card>
                 </div>
 
-                {/* Full Width History Section */}
-                <div className="lg:col-span-12">
-                    <Card title="RIWAYAT PENGUMUMAN">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {announcements.length > 0 ? (
-                                announcements.map((item: any) => (
-                                    <div key={item.id} className="bg-white border-2 border-slate-100 p-6 rounded-[2rem] hover:border-emerald-400 transition-colors group relative flex flex-col justify-between h-full">
-                                        <div>
-                                            <div className="flex justify-between items-start mb-4">
-                                                <h4 className="font-black text-lg text-slate-900 uppercase italic leading-tight line-clamp-2">{item.judul}</h4>
-                                                <button
-                                                    onClick={() => handleDeleteAnnouncement(item.id)}
-                                                    className="text-slate-300 hover:text-rose-500 hover:bg-rose-50 p-2 rounded-xl transition-all shrink-0"
-                                                    title="Hapus Pengumuman"
-                                                >
-                                                    <Trash2 size={18} />
-                                                </button>
+                <div className="lg:col-span-4 space-y-10">
+                    <Card title="RADAR AKTIVITAS SISTEM">
+                        <div className="space-y-8">
+                            <div className="bg-emerald-50 p-6 rounded-[2rem] border-2 border-emerald-100 border-dashed">
+                                <p className="text-[10px] font-black text-emerald-700 uppercase tracking-[0.2em] mb-4">Radar Aktivitas Sistem</p>
+                                <div className="space-y-6">
+                                    {(activityLogs || []).slice(0, 7).map((log: any, i: number) => {
+                                        const getActionMeta = (action: string) => {
+                                            switch (action) {
+                                                case 'LOGIN': return { label: 'Masuk Sistem', color: 'text-blue-600', dot: 'bg-blue-500' };
+                                                case 'LOGOUT': return { label: 'Keluar Sistem', color: 'text-slate-500', dot: 'bg-slate-400' };
+                                                case 'CREATE_USER': return { label: 'Tambah User Baru', color: 'text-emerald-600', dot: 'bg-emerald-500' };
+                                                case 'DELETE_USER': return { label: 'Hapus Akun', color: 'text-rose-600', dot: 'bg-rose-500' };
+                                                case 'APPROVE_REPORT': return { label: 'Setujui Laporan', color: 'text-emerald-600', dot: 'bg-emerald-500' };
+                                                case 'REVISE_REPORT': return { label: 'Minta Revisi', color: 'text-amber-600', dot: 'bg-amber-500' };
+                                                case 'SUBMIT_REPORT': return { label: 'Kirim Laporan', color: 'text-indigo-600', dot: 'bg-indigo-500' };
+                                                default: return { label: action, color: 'text-slate-500', dot: 'bg-slate-400' };
+                                            }
+                                        };
+                                        const meta = getActionMeta(log.action);
+                                        return (
+                                            <div key={i} className="flex gap-4 relative">
+                                                <div className="w-8 h-8 rounded-full bg-white border-2 border-slate-100 flex items-center justify-center shrink-0">
+                                                    <div className={`w-2 h-2 rounded-full ${meta.dot}`} />
+                                                </div>
+                                                <div className="text-[11px] leading-tight">
+                                                    <span className="font-black text-slate-900 uppercase tracking-tighter block">{log.username}</span>
+                                                    <span className={`font-bold ${meta.color} uppercase text-[9px] block`}>{meta.label}: {log.subject}</span>
+                                                    <span className="text-[8px] font-bold text-slate-400 uppercase italic">{new Date(log.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB</span>
+                                                </div>
                                             </div>
-                                            <p className="text-slate-500 text-sm font-bold leading-relaxed mb-6 line-clamp-3">{item.isi_info}</p>
-                                        </div>
-                                        <div className="flex items-center gap-3 text-[10px] font-black text-slate-300 uppercase tracking-widest pt-4 border-t-2 border-slate-50">
-                                            <span className="flex items-center gap-1.5 text-emerald-600">
-                                                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                                                {new Date(item.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
-                                            </span>
-                                            <span>•</span>
-                                            <span>{new Date(item.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB</span>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="col-span-full py-12 text-center border-2 border-dashed border-slate-200 rounded-3xl bg-slate-50">
-                                    <p className="text-slate-300 font-black text-base uppercase italic tracking-widest opacity-50">Belum ada pengumuman aktif</p>
+                                        );
+                                    })}
+                                    {activityLogs.length === 0 && (
+                                        <p className="text-[10px] font-bold text-slate-400 text-center py-10 uppercase italic">Belum ada aktivitas terekam</p>
+                                    )}
                                 </div>
-                            )}
+                            </div>
+
+                            <div className="bg-slate-900 p-8 rounded-[2rem] text-white relative overflow-hidden group">
+                                <TrendingUp size={150} className="absolute -right-10 -bottom-10 opacity-10 group-hover:scale-110 transition-transform duration-700" />
+                                <h4 className="font-black text-lg mb-2 relative z-10">Laporan Final Aktif</h4>
+                                <div className="text-4xl font-black italic relative z-10 mb-4">{stats.terverifikasi}</div>
+                                <Button
+                                    variant="outline"
+                                    className="w-full bg-white/10 hover:bg-white text-white hover:text-slate-900 border-white/20 relative z-10 !py-3 !text-xs font-black uppercase tracking-[0.2em]"
+                                    onClick={() => window.location.href = '/admin/recap'}
+                                >
+                                    LIHAT REKAPITULASI
+                                </Button>
+                            </div>
                         </div>
                     </Card>
                 </div>
@@ -267,29 +268,19 @@ export default function AdminDashboard() {
     );
 }
 
-function StatsCard({ label, value, subValue, icon, color }: any) {
-    const variants: any = {
-        blue: "text-blue-600 bg-blue-50 border-blue-200",
-        emerald: "text-emerald-600 bg-emerald-50 border-emerald-200",
-        amber: "text-amber-600 bg-amber-50 border-amber-200",
-        rose: "text-rose-600 bg-rose-50 border-rose-200",
-    };
-
+function MiniStatCard({ label, value, icon, trend }: any) {
     return (
-        <div className="bg-white p-8 rounded-[2.5rem] border-[3px] border-slate-900 shadow-[6px_6px_0_0_#0f172a] relative overflow-hidden group">
-            <div className="relative z-10">
-                <p className="text-slate-400 text-[10px] font-black mb-3 uppercase tracking-[0.2em]">{label}</p>
-                <h3 className="text-6xl font-black text-slate-900 tracking-tighter italic">{value}</h3>
-                {subValue && (
-                    <div className="mt-6 inline-flex items-center gap-2 text-[10px] font-black text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl uppercase tracking-widest border border-emerald-100">
-                        <TrendingUp size={12} />
-                        {subValue}
-                    </div>
-                )}
+        <div className="bg-white p-6 rounded-[2rem] border-[3px] border-slate-900 shadow-[6px_6px_0_0_#0f172a] hover:bg-slate-50 transition-all group">
+            <div className="flex items-center justify-between mb-4">
+                <div className="w-10 h-10 bg-emerald-50 rounded-xl border-2 border-slate-900 flex items-center justify-center text-emerald-600 shadow-[3px_3px_0_0_#0f172a] group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                    {icon}
+                </div>
+                <div className="text-[9px] font-black text-emerald-700 bg-emerald-100/50 px-2 py-0.5 rounded-lg border border-emerald-200 uppercase tracking-tighter">
+                    {trend}
+                </div>
             </div>
-            <div className={`absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity ${variants[color]}`}>
-                {icon}
-            </div>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{label}</p>
+            <p className="text-3xl font-black text-slate-900 tracking-tighter italic">{value}</p>
         </div>
     );
 }

@@ -30,6 +30,8 @@ export const api = {
         login: (credentials: any) => apiFetch('/login', { method: 'POST', body: JSON.stringify(credentials) }),
         logout: () => apiFetch('/logout', { method: 'POST' }),
         me: () => apiFetch('/me'),
+        updateProfile: (data: any) => apiFetch('/profile/update', { method: 'PUT', body: JSON.stringify(data) }),
+        updatePassword: (data: any) => apiFetch('/profile/password', { method: 'PUT', body: JSON.stringify(data) }),
     },
     admin: {
         getStats: () => apiFetch('/admin/dashboard'),
@@ -37,30 +39,33 @@ export const api = {
             const searchParams = new URLSearchParams(params).toString();
             return apiFetch(`/admin/laporan?${searchParams}`);
         },
-        verifyLaporan: (id: number, data: any) => apiFetch(`/admin/laporan/${id}/verify`, { method: 'POST', body: JSON.stringify(data) }),
+        verifyLaporan: (id: string | number, data: any) => apiFetch(`/admin/laporan/${id}/verify`, { method: 'POST', body: JSON.stringify(data) }),
         getRecap: (params?: any) => {
             const searchParams = new URLSearchParams(params).toString();
             return apiFetch(`/admin/recap?${searchParams}`);
         },
-        deleteLaporan: (id: number) => apiFetch(`/admin/laporan/${id}`, { method: 'DELETE' }),
-        restoreLaporan: (id: number) => apiFetch(`/admin/laporan/${id}/restore`, { method: 'POST' }),
-        permanentDeleteLaporan: (id: number) => apiFetch(`/admin/laporan/${id}/permanent`, { method: 'DELETE' }),
+        getActivityLogs: () => apiFetch('/admin/logs'),
+        deleteLog: (id: string | number) => apiFetch(`/admin/logs/${id}`, { method: 'DELETE' }),
+        bulkDeleteLogs: (ids: (string | number)[]) => apiFetch('/admin/logs/bulk-delete', { method: 'POST', body: JSON.stringify({ ids }) }),
+        deleteLaporan: (id: string | number) => apiFetch(`/admin/laporan/${id}`, { method: 'DELETE' }),
+        restoreLaporan: (id: string | number) => apiFetch(`/admin/laporan/${id}/restore`, { method: 'POST' }),
+        permanentDeleteLaporan: (id: string | number) => apiFetch(`/admin/laporan/${id}/permanent`, { method: 'DELETE' }),
         createPengumuman: (data: any) => apiFetch('/master/pengumuman', { method: 'POST', body: JSON.stringify(data) }),
-        deletePengumuman: (id: number) => apiFetch(`/master/pengumuman/${id}`, { method: 'DELETE' }),
+        deletePengumuman: (id: string | number) => apiFetch(`/master/pengumuman/${id}`, { method: 'DELETE' }),
     },
     master: {
         // Madrasah (Matching DB: id_madrasah, nama_madrasah)
         getMadrasah: () => apiFetch('/master/madrasah'),
         getMadrasahById: (id: string | number) => apiFetch(`/master/madrasah/${id}`),
-        storeMadrasah: (data: any) => apiFetch('/master/madrasah', { method: 'POST', body: JSON.stringify(data) }),
-        updateMadrasah: (id: number, data: any) => apiFetch(`/master/madrasah/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-        deleteMadrasah: (id: number) => apiFetch(`/master/madrasah/${id}`, { method: 'DELETE' }),
+        createMadrasah: (data: any) => apiFetch('/master/madrasah', { method: 'POST', body: JSON.stringify(data) }),
+        updateMadrasah: (id: string | number, data: any) => apiFetch(`/master/madrasah/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+        deleteMadrasah: (id: string | number) => apiFetch(`/master/madrasah/${id}`, { method: 'DELETE' }),
 
         // Users (Matching DB: username, role, id_madrasah)
         getUsers: () => apiFetch('/master/users'),
-        storeUser: (data: any) => apiFetch('/master/users', { method: 'POST', body: JSON.stringify(data) }),
-        updateUser: (id: number, data: any) => apiFetch(`/master/users/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-        deleteUser: (id: number) => apiFetch(`/master/users/${id}`, { method: 'DELETE' }),
+        createUser: (data: any) => apiFetch('/master/users', { method: 'POST', body: JSON.stringify(data) }),
+        updateUser: (id: string | number, data: any) => apiFetch(`/master/users/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+        deleteUser: (id: string | number) => apiFetch(`/master/users/${id}`, { method: 'DELETE' }),
 
         // Pengumuman
         getPengumuman: () => apiFetch('/pengumuman'),

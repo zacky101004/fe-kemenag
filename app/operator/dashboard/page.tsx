@@ -63,82 +63,118 @@ export default function OperatorDashboard() {
 
     return (
         <div className="space-y-12 pb-20 animate-fade-in">
+            {/* Header: Title & Action Status */}
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-slate-900 italic">Beranda Operator</h1>
-                    <p className="text-muted text-sm uppercase mt-2">Pantau status laporan dan informasi terbaru madrasah anda.</p>
+                    <h1 className="text-slate-900 italic">Panduan & Tutorial Sistem</h1>
+                    <p className="text-muted text-sm uppercase mt-2 font-bold tracking-tight text-blue-600">Pelajari instruksi penggunaan SI-EMIS untuk kelancaran operasional madrasah.</p>
                 </div>
                 <div className="flex items-center gap-4 bg-white border-2 border-slate-900 px-6 py-3 rounded-2xl shadow-[4px_4px_0_0_#0f172a]">
                     <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-700">
                         <Sparkles size={24} />
                     </div>
                     <div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Status Sistem</p>
-                        <p className="text-xs font-black text-slate-900 uppercase">Online & Tersinkron</p>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Status Navigasi</p>
+                        <p className="text-xs font-black text-slate-900 uppercase">Pusat Bantuan Aktif</p>
                     </div>
                 </div>
             </div>
 
-            {/* Dashboard Grid: Status + Latest Announcement */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                {/* Status Laporan - Left Side (1 column) */}
-                <div className="lg:col-span-1">
-                    <div className="bg-white p-8 rounded-[2.5rem] border-[3px] border-slate-900 shadow-[6px_6px_0_0_#0f172a]">
-                        <div className="flex flex-col items-center text-center gap-6 w-full">
-                            <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 border-2 border-emerald-200">
+            {/* Quick Tutorial Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="bg-white p-8 rounded-[2.5rem] border-[3px] border-slate-900 shadow-[6px_6px_0_0_#10b981] group hover:-translate-y-1 transition-all">
+                    <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 border-2 border-emerald-100 mb-6 group-hover:rotate-6 transition-transform">
+                        <FileText size={28} />
+                    </div>
+                    <h3 className="text-xl font-black text-slate-900 uppercase italic tracking-tighter mb-3">Unit Pelaporan</h3>
+                    <p className="text-xs text-slate-500 font-bold leading-relaxed uppercase italic">
+                        1. Pilih menu "Laporan Saya"<br />
+                        2. Klik tombol "Tambah Laporan"<br />
+                        3. Isi data & unggah berkas PDF<br />
+                        4. Klik simpan & tunggu verifikasi.
+                    </p>
+                </div>
+
+                <div className="bg-white p-8 rounded-[2.5rem] border-[3px] border-slate-900 shadow-[6px_6px_0_0_#3b82f6] group hover:-translate-y-1 transition-all">
+                    <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 border-2 border-blue-100 mb-6 group-hover:rotate-6 transition-transform">
+                        <School size={28} />
+                    </div>
+                    <h3 className="text-xl font-black text-slate-900 uppercase italic tracking-tighter mb-3">Update Kelembagaan</h3>
+                    <p className="text-xs text-slate-500 font-bold leading-relaxed uppercase italic">
+                        Pastikan data NPSN, NSM, dan alamat madrasah selalu diperbarui melalui menu "Profil" agar data tersinkron ke pusat.
+                    </p>
+                </div>
+
+                <div className="bg-white p-8 rounded-[2.5rem] border-[3px] border-slate-900 shadow-[6px_6px_0_0_#f59e0b] group hover:-translate-y-1 transition-all">
+                    <div className="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600 border-2 border-amber-100 mb-6 group-hover:rotate-6 transition-transform">
+                        <Bell size={28} />
+                    </div>
+                    <h3 className="text-xl font-black text-slate-900 uppercase italic tracking-tighter mb-3">Pusat Notifikasi</h3>
+                    <p className="text-xs text-slate-500 font-bold leading-relaxed uppercase italic">
+                        Selalu pantau "Papan Pengumuman" di bawah untuk instruksi terbaru, jadwal, atau perbaikan data yang diminta oleh admin.
+                    </p>
+                </div>
+            </div>
+
+            {/* Dashboard Content: Unified Information Hub */}
+            <div className="grid grid-cols-1 gap-10">
+                <div className="bg-white p-8 md:p-12 rounded-[3.5rem] border-[3px] border-slate-900 shadow-[10px_10px_0_0_#0f172a] h-full flex flex-col relative overflow-hidden">
+                    {/* Integrated Status Header */}
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12 border-b-4 border-slate-100 pb-12">
+                        <div className="space-y-3 px-2">
+                            <span className="px-5 py-2 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em]">
+                                PAPAN PENGUMUMAN
+                            </span>
+                            <h2 className="text-4xl font-black text-slate-900 tracking-tighter italic uppercase leading-none mt-2">Pusat Informasi</h2>
+                            <p className="text-slate-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                                <Info size={16} className="text-blue-500" />
+                                Update Berita & Status Laporan Anda
+                            </p>
+                        </div>
+
+                        <div className="bg-emerald-50 p-6 md:p-8 rounded-[2.5rem] border-[3px] border-emerald-600 flex items-center gap-6 shadow-[6px_6px_0_0_#065f46]">
+                            <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-emerald-600 border-2 border-emerald-100 shadow-sm">
                                 <FileText size={32} strokeWidth={2.5} />
                             </div>
-                            <div className="space-y-3">
-                                <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">Status Laporan</p>
-                                <h3 className="text-3xl font-black text-slate-900 tracking-tighter italic leading-none">{dashboardData.last_report_status}</h3>
-                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center justify-center gap-2">
-                                    <TrendingUp size={12} className="text-emerald-500" />
-                                    Terakhir disubmit
-                                </p>
+                            <div>
+                                <p className="text-emerald-800 text-[10px] font-black uppercase tracking-widest mb-1 opacity-60">Status Laporan Terakhir</p>
+                                <div className="flex items-center gap-3">
+                                    <h3 className="text-2xl font-black text-emerald-900 tracking-tighter italic leading-none">{dashboardData.last_report_status}</h3>
+                                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Latest Announcement - Right Side (2 columns) */}
-                <div className="lg:col-span-2">
                     {dashboardData.announcements.length > 0 ? (
-                        <div className="bg-white p-8 rounded-[3rem] border-[3px] border-slate-900 shadow-[8px_8px_0_0_#0f172a] h-full flex flex-col">
-                            <div className="flex items-center justify-between mb-6">
-                                <span className="px-5 py-2 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em]">
-                                    PAPAN PENGUMUMAN
-                                </span>
-                                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-100 px-3 py-1 rounded-lg border border-slate-200">
-                                    {dashboardData.announcements.length} INFO
-                                </div>
-                            </div>
-
-                            <div className="overflow-y-auto pr-2 space-y-6 max-h-[400px] custom-scrollbar">
-                                {dashboardData.announcements.map((announcement: any, index: number) => (
-                                    <div key={index} className="group relative border-b-2 border-slate-100 last:border-0 pb-6 last:pb-0">
-                                        <div className="flex items-center gap-3 text-emerald-600 font-black uppercase text-[10px] tracking-widest mb-2">
+                        <div className="overflow-y-auto pr-4 space-y-10 max-h-[500px] custom-scrollbar px-2">
+                            {dashboardData.announcements.map((announcement: any, index: number) => (
+                                <div key={index} className="group relative border-transparent hover:border-l-4 hover:border-emerald-500 hover:pl-8 transition-all duration-300">
+                                    <div className="flex items-center gap-4 text-emerald-600 font-black uppercase text-[10px] tracking-widest mb-3">
+                                        <div className="bg-emerald-100 p-2 rounded-lg">
                                             <Calendar size={14} />
-                                            {new Date(announcement.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-                                            {index === 0 && <span className="bg-rose-500 text-white px-2 py-0.5 rounded text-[9px] animate-pulse ml-2">TERBARU</span>}
                                         </div>
+                                        {new Date(announcement.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                        {index === 0 && <span className="bg-rose-500 text-white px-3 py-1 rounded-full text-[9px] font-black tracking-widest ml-2 animate-bounce">TERBARU</span>}
+                                    </div>
 
-                                        <h4 className="font-black text-xl mb-3 text-slate-900 tracking-tighter uppercase italic leading-tight group-hover:text-emerald-600 transition-colors">
-                                            {announcement.judul}
-                                        </h4>
+                                    <h4 className="font-black text-2xl mb-4 text-slate-900 tracking-tighter uppercase italic leading-tight group-hover:text-emerald-700 transition-colors">
+                                        {announcement.judul}
+                                    </h4>
 
-                                        <div className="text-slate-500 text-sm font-medium leading-relaxed bg-slate-50 p-4 rounded-2xl border-2 border-slate-100 italic">
-                                            <div className="flex gap-3">
-                                                <Info className="shrink-0 text-slate-300 mt-0.5" size={16} />
-                                                <span>{announcement.isi_info}</span>
-                                            </div>
+                                    <div className="bg-slate-50 p-6 rounded-3xl border-2 border-slate-100 italic relative group-hover:bg-slate-100 transition-colors">
+                                        <div className="flex gap-4">
+                                            <Info className="shrink-0 text-slate-300 mt-1" size={18} />
+                                            <span className="text-slate-600 text-base font-medium leading-relaxed">{announcement.isi_info}</span>
                                         </div>
                                     </div>
-                                ))}
-                            </div>
+                                </div>
+                            ))}
                         </div>
                     ) : (
-                        <div className="bg-white p-20 rounded-[3rem] border-4 border-dashed border-slate-200 h-full flex items-center justify-center">
-                            <p className="text-slate-300 font-black text-2xl uppercase italic tracking-widest opacity-30">Belum ada pengumuman</p>
+                        <div className="p-20 text-center">
+                            <Bell size={64} className="mx-auto text-slate-200 mb-6 opacity-50" />
+                            <p className="text-slate-300 font-black text-2xl uppercase italic tracking-widest opacity-30">Belum ada pengumuman masuk</p>
                         </div>
                     )}
                 </div>

@@ -17,13 +17,13 @@ import {
 } from 'lucide-react';
 import { api } from '@/lib/api';
 
-export default function KasiMasterUsersPage() {
+export default function StaffMasterUsersPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [users, setUsers] = useState<any[]>([]);
     const [madrasahs, setMadrasahs] = useState<any[]>([]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalTitle, setModalTitle] = useState('Registrasi Pengguna');
+    const [modalTitle, setModalTitle] = useState('Tambah User Baru');
     const [searchQuery, setSearchQuery] = useState('');
     const [roleFilter, setRoleFilter] = useState('Semua Akses');
 
@@ -84,18 +84,18 @@ export default function KasiMasterUsersPage() {
             if (response.ok) {
                 setIsModalOpen(false);
                 fetchData();
-                alert('Akun pengguna berhasil dikonfigurasi!');
+                alert('Akun pengguna berhasil disimpan!');
             } else {
                 const errorData = await response.json();
-                alert('Gagal simpan: ' + (errorData.message || 'Cek kembali data Anda'));
+                alert('Gagal simpan: ' + (errorData.message || 'Username mungkin sudah digunakan'));
             }
         } catch (error) {
-            alert('Kesalahan koneksi pimpinan');
+            alert('Kesalahan koneksi server');
         }
     };
 
     const handleDelete = async (id: number, username: string) => {
-        if (confirm(`Hapus permanen akun "${username}"? Tindakan ini tidak dapat dibatalkan.`)) {
+        if (confirm(`Hapus akun pengguna "${username}"?`)) {
             try {
                 const res = await api.master.deleteUser(id);
                 if (res.ok) fetchData();
@@ -107,7 +107,7 @@ export default function KasiMasterUsersPage() {
 
     const openAddModal = () => {
         setFormData({ id: '', username: '', password: '', role: 'operator_sekolah', id_madrasah: '' });
-        setModalTitle('Registrasi User Baru');
+        setModalTitle('Registrasi Pengguna Baru');
         setIsModalOpen(true);
     };
 
@@ -119,12 +119,13 @@ export default function KasiMasterUsersPage() {
             role: item.role,
             id_madrasah: item.id_madrasah || ''
         });
-        setModalTitle('Modifikasi Akun & Hak Akses');
+        setModalTitle('Modifikasi Hak Akses');
         setIsModalOpen(true);
     };
 
     return (
         <div className="space-y-6 pb-10 -mt-6">
+
             <Card>
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-10">
                     <div className="md:col-span-6 relative group">
@@ -156,12 +157,12 @@ export default function KasiMasterUsersPage() {
                     </div>
                     <div className="md:col-span-3">
                         <Button
-                            variant="primary"
-                            className="w-full h-16 text-sm font-black bg-slate-900 shadow-[6px_6px_0_0_#0f172a10] border-[3px] border-slate-900 rounded-[1.5rem] hover:shadow-[8px_8px_0_0_#0f172a20] transition-all"
+                            variant="outline"
+                            className="w-full h-16 text-sm font-black bg-white text-slate-900 shadow-[6px_6px_0_0_#0f172a10] border-[3px] border-slate-900 rounded-[1.5rem] hover:bg-slate-50 transition-all"
                             icon={<Plus size={20} />}
                             onClick={openAddModal}
                         >
-                            TAMBAH USER
+                            TAMBAH OPERATOR
                         </Button>
                     </div>
                 </div>
@@ -176,18 +177,18 @@ export default function KasiMasterUsersPage() {
                                 <th className="px-6 py-6 border-b-2 border-slate-300 text-center">Kontrol</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y-2 divide-slate-100">
+                        <tbody className="divide-y-2 divide-slate-100 italic">
                             {isLoading ? (
                                 <tr>
                                     <td colSpan={4} className="py-20 text-center">
-                                        <Loader2 className="animate-spin mx-auto text-emerald-600 mb-4" size={48} />
-                                        <p className="font-black text-slate-300 uppercase tracking-widest text-center">Memverifikasi Database...</p>
+                                        <Loader2 className="animate-spin mx-auto text-amber-600 mb-4" size={48} />
+                                        <p className="font-black text-slate-300 uppercase tracking-widest">Sinkronisasi Keamanan...</p>
                                     </td>
                                 </tr>
                             ) : filteredUsers.length === 0 ? (
                                 <tr>
-                                    <td colSpan={4} className="py-20 text-center text-slate-300 font-black uppercase tracking-widest">
-                                        Tidak ada akun terdaftar
+                                    <td colSpan={4} className="py-20 text-center">
+                                        <p className="font-black text-slate-300 uppercase tracking-widest opacity-40">User tidak ditemukan</p>
                                     </td>
                                 </tr>
                             ) : filteredUsers.map((item) => (
@@ -231,8 +232,20 @@ export default function KasiMasterUsersPage() {
                                     </td>
                                     <td className="px-6 py-8 text-center border-b">
                                         <div className="flex items-center justify-center gap-3">
-                                            <Button variant="outline" className="h-12 w-12 border-slate-200 hover:border-emerald-400 hover:bg-emerald-50 rounded-xl" icon={<Edit size={20} className="text-emerald-800" />} onClick={() => openEditModal(item)} />
-                                            <Button variant="danger" className="h-12 w-12 border-2 rounded-xl" icon={<Trash2 size={20} />} onClick={() => handleDelete(item.id, item.username)} />
+                                            <Button
+                                                variant="outline"
+                                                className="h-12 w-12 border-slate-200 hover:border-emerald-400 hover:bg-emerald-50 rounded-xl disabled:opacity-30 disabled:grayscale disabled:cursor-not-allowed"
+                                                icon={<Edit size={20} className="text-emerald-800" />}
+                                                onClick={() => openEditModal(item)}
+                                                disabled={item.role !== 'operator_sekolah'}
+                                            />
+                                            <Button
+                                                variant="danger"
+                                                className="h-12 w-12 border-2 rounded-xl disabled:opacity-30 disabled:grayscale disabled:cursor-not-allowed"
+                                                icon={<Trash2 size={20} />}
+                                                onClick={() => handleDelete(item.id, item.username)}
+                                                disabled={item.role !== 'operator_sekolah'}
+                                            />
                                         </div>
                                     </td>
                                 </tr>
@@ -249,26 +262,29 @@ export default function KasiMasterUsersPage() {
                 footer={
                     <div className="flex gap-4">
                         <Button variant="outline" className="flex-1 font-black border-4 py-4" onClick={() => setIsModalOpen(false)}>BATAL</Button>
-                        <Button type="submit" form="user-form" className="flex-1 font-black bg-slate-900 shadow-xl py-4">SIMPAN PENGGUNA</Button>
+                        <Button type="submit" form="user-form" className="flex-1 font-black bg-slate-900 shadow-xl py-4">SIMPAN OPERATOR</Button>
                     </div>
                 }
             >
                 <form id="user-form" onSubmit={handleSave} className="space-y-6">
-                    <Input label="Username / ID Login" required value={formData.username} onChange={(e) => setFormData({ ...formData, username: e.target.value })} />
-                    <Input label="Password (Isi baru/ubah)" type="password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
+                    <Input label="Username / ID" required value={formData.username} onChange={(e) => setFormData({ ...formData, username: e.target.value })} />
+                    <Input label="Password (Isi untuk reset atau set baru)" type="password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
 
                     <div className="space-y-2">
-                        <label className="input-label font-black text-[10px] uppercase text-slate-400 pl-1">Level Otoritas Sistem</label>
-                        <select className="w-full h-14 px-5 bg-slate-50 border-2 border-slate-200 rounded-3xl font-bold uppercase text-xs" value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })}>
-                            <option value="operator_sekolah">OPERATOR MADRASAH (Input Data)</option>
-                            <option value="staff_penmad">STAF PENMAD (Verifikator Teknis)</option>
-                            <option value="kasi_penmad">KASI PENMAD (Pimpinan/Oversight)</option>
+                        <label className="input-label font-black text-[10px] uppercase text-slate-400 pl-1">Otoritas Sistem</label>
+                        <select
+                            className="w-full h-14 px-5 bg-slate-50 border-2 border-slate-200 rounded-3xl font-bold uppercase text-xs cursor-not-allowed opacity-70"
+                            value={formData.role}
+                            disabled
+                        >
+                            <option value="operator_sekolah">OPERATOR MADRASAH (Entry)</option>
                         </select>
+                        <p className="text-[9px] font-bold text-amber-600 uppercase mt-1 pl-1 italic">* Staf hanya berwenang mengelola akun Operator Madrasah.</p>
                     </div>
 
                     {formData.role === 'operator_sekolah' && (
                         <div className="space-y-2">
-                            <label className="input-label font-black text-[10px] uppercase text-slate-400 pl-1">Afiliasi Unit Madrasah</label>
+                            <label className="input-label font-black text-[10px] uppercase text-slate-400 pl-1">Unit Madrasah</label>
                             <select className="w-full h-14 px-5 bg-slate-50 border-2 border-slate-200 rounded-3xl font-bold uppercase text-xs" required value={formData.id_madrasah} onChange={(e) => setFormData({ ...formData, id_madrasah: e.target.value })}>
                                 <option value="">-- Pilih Madrasah --</option>
                                 {madrasahs.map(m => (

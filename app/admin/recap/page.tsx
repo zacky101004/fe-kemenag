@@ -4,19 +4,32 @@ import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { FileSpreadsheet, Printer, Loader2, Calendar, MapPin, Trash2, Archive, RotateCcw, ChevronDown } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { KECAMATAN_KAMPAR } from '@/lib/constants';
 
 export default function RecapPage() {
+    const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
     const [recapData, setRecapData] = useState<any[]>([]);
     const [bulan, setBulan] = useState(new Date().toISOString().slice(0, 7)); // YYYY-MM
     const [kecamatan, setKecamatan] = useState('Semua Kec.');
     const [showArchived, setShowArchived] = useState(false);
+    const [userRole, setUserRole] = useState<string>('');
 
     const fetchRecap = async () => {
         setIsLoading(true);
         try {
+            const userStr = localStorage.getItem('user');
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                if (user.role === 'staff_penmad') {
+                    router.push('/admin/dashboard');
+                    return;
+                }
+                setUserRole(user.role);
+            }
+
             const response = await api.admin.getRecap({ archived: showArchived ? 1 : 0 });
             const data = await response.json();
             if (response.ok) {
@@ -33,15 +46,17 @@ export default function RecapPage() {
         fetchRecap();
     }, [showArchived]);
 
-    return (
-        <div className="space-y-12 pb-20 animate-fade-in">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                <div>
-                    <h1 className="text-slate-900 italic">Pusat Rekapitulasi Data</h1>
-                    <p className="text-muted text-sm uppercase mt-2">Unduh ringkasan laporan bulanan dan tahunan madrasah.</p>
-                </div>
+    if (isLoading && !userRole) {
+        return (
+            <div className="h-[60vh] flex flex-col items-center justify-center gap-4 animate-fade-in">
+                <Loader2 className="animate-spin text-emerald-700" size={64} />
+                <p className="font-black text-slate-900 uppercase tracking-widest text-sm">Menyiapkan Dokumen Rekap...</p>
             </div>
+        );
+    }
 
+    return (
+        <div className="space-y-6 animate-fade-in -mt-6 pb-20">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                 <Card title="REKAP BULANAN" className="hover:shadow-2xl transition-all duration-500">
                     <div className="space-y-10">

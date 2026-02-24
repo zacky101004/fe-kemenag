@@ -33,6 +33,8 @@ export default function LoginPage() {
 
       if (data.user.role === 'kasi_penmad') {
         router.push('/admin/dashboard');
+      } else if (data.user.role === 'staff_penmad') {
+        router.push('/staff/dashboard');
       } else {
         router.push('/operator/dashboard');
       }
@@ -91,7 +93,7 @@ export default function LoginPage() {
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-5">
               <div className="group">
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 pl-1">Username / ID</label>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 pl-1">NPSN / Username</label>
                 <div className="relative transition-all duration-300 focus-within:-translate-y-1">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <User className="text-slate-300 group-focus-within:text-emerald-500 transition-colors" size={20} />
@@ -100,7 +102,7 @@ export default function LoginPage() {
                     type="text"
                     required
                     className="w-full h-14 pl-12 pr-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-slate-900 font-bold focus:outline-none focus:border-emerald-500 focus:bg-white transition-all placeholder:text-slate-300 placeholder:font-normal"
-                    placeholder="Masukkan ID Pengguna"
+                    placeholder="NPSN (Operator) / Username (Staf)"
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                   />
