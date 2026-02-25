@@ -430,39 +430,39 @@ function ViewSarpras({ data }: { data: any[] }) {
                 ? <EmptyState icon={<Building size={48} />} text="Belum ada data sarpras" />
                 : (
                     <div className="overflow-x-auto rounded-[2rem] border-[3px] border-slate-900 shadow-[8px_8px_0_0_#f1f5f9]">
-                        <table className="border-collapse" style={{ minWidth: '1100px', width: '100%' }}>
+                        <table className="border-collapse w-full" style={{ minWidth: '700px' }}>
                             <thead>
                                 <tr>
-                                    <TH style={{ minWidth: '200px' }}>Jenis Aset</TH>
-                                    <TH style={{ minWidth: '120px' }}>Luas</TH>
-                                    <TH style={{ minWidth: '80px' }}>Baik</TH>
-                                    <TH style={{ minWidth: '100px' }}>Rusak Ringan</TH>
-                                    <TH style={{ minWidth: '100px' }}>Rusak Berat</TH>
-                                    <TH style={{ minWidth: '100px' }}>Kekurangan</TH>
-                                    <TH style={{ minWidth: '110px' }}>Perlu Rehab</TH>
-                                    <TH style={{ minWidth: '180px', borderRight: 'none' }}>Keterangan</TH>
+                                    <th style={{ backgroundColor: '#0f172a', color: 'white', padding: '12px 14px', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.12em', textAlign: 'center', borderRight: '1px solid #334155', borderBottom: '4px solid #0f172a', minWidth: '180px' }}>Jenis Aset</th>
+                                    <th style={{ backgroundColor: '#0f172a', color: 'white', padding: '12px 10px', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'center', borderRight: '1px solid #334155', borderBottom: '4px solid #0f172a', minWidth: '80px' }}>Luas</th>
+                                    <th style={{ backgroundColor: '#0f172a', color: 'white', padding: '12px 10px', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'center', borderRight: '1px solid #334155', borderBottom: '4px solid #0f172a', minWidth: '55px' }}>Baik</th>
+                                    <th style={{ backgroundColor: '#0f172a', color: 'white', padding: '12px 10px', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'center', borderRight: '1px solid #334155', borderBottom: '4px solid #0f172a', minWidth: '70px' }}>R. Ringan</th>
+                                    <th style={{ backgroundColor: '#0f172a', color: 'white', padding: '12px 10px', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'center', borderRight: '1px solid #334155', borderBottom: '4px solid #0f172a', minWidth: '70px' }}>R. Berat</th>
+                                    <th style={{ backgroundColor: '#0f172a', color: 'white', padding: '12px 10px', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'center', borderRight: '1px solid #334155', borderBottom: '4px solid #0f172a', minWidth: '65px' }}>Kurang</th>
+                                    <th style={{ backgroundColor: '#0f172a', color: 'white', padding: '12px 10px', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'center', borderRight: '1px solid #334155', borderBottom: '4px solid #0f172a', minWidth: '65px' }}>Rehab</th>
+                                    <th style={{ backgroundColor: '#0f172a', color: 'white', padding: '12px 14px', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'left', borderRight: 'none', borderBottom: '4px solid #0f172a' }}>Keterangan</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {data.map((s, i) => (
                                     <tr key={i} className="hover:bg-slate-50 transition-colors group">
-                                        <TD className="text-left font-black text-slate-900 bg-slate-50/30 group-hover:bg-white">{s.jenis_aset}</TD>
-                                        <TD>{s.luas}</TD>
-                                        <TD className="font-bold">{s.kondisi_baik ?? '0'}</TD>
-                                        <TD className="font-bold">{s.kondisi_rusak_ringan ?? '0'}</TD>
-                                        <TD className="font-bold">{s.kondisi_rusak_berat ?? '0'}</TD>
-                                        <TD>{s.kekurangan ?? '0'}</TD>
-                                        <TD>{s.perlu_rehab ?? '0'}</TD>
-                                        <td className="px-5 py-4 border-b border-slate-200 text-sm text-slate-600 font-medium text-left italic">
-                                            {s.keterangan || <span className="text-slate-300 not-italic">Tanpa keterangan</span>}
+                                        <td className="px-3 py-3 border-b border-r border-slate-200 text-xs font-black text-slate-900 bg-slate-50/30 group-hover:bg-white text-center">{s.jenis_aset}</td>
+                                        <td className="px-3 py-3 border-b border-r border-slate-200 text-xs font-bold text-slate-700 text-center">{s.luas || <span className="text-slate-300">-</span>}</td>
+                                        <td className="px-3 py-3 border-b border-r border-slate-200 text-xs font-bold text-slate-700 text-center">{s.kondisi_baik ?? '0'}</td>
+                                        <td className="px-3 py-3 border-b border-r border-slate-200 text-xs font-bold text-amber-700 text-center">{s.kondisi_rusak_ringan ?? '0'}</td>
+                                        <td className="px-3 py-3 border-b border-r border-slate-200 text-xs font-bold text-rose-700 text-center">{s.kondisi_rusak_berat ?? '0'}</td>
+                                        <td className="px-3 py-3 border-b border-r border-slate-200 text-xs font-bold text-slate-700 text-center">{s.kekurangan ?? '0'}</td>
+                                        <td className="px-3 py-3 border-b border-r border-slate-200 text-xs font-bold text-slate-700 text-center">{s.perlu_rehab ?? '0'}</td>
+                                        <td className="px-3 py-3 border-b border-slate-200 text-xs text-slate-500 font-medium text-left italic">
+                                            {s.keterangan || <span className="text-slate-300 not-italic">-</span>}
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                             <tfoot>
                                 <tr style={{ backgroundColor: '#f8fafc', borderTop: '2px solid #0f172a' }}>
-                                    <td className="p-5 font-black text-slate-900 uppercase text-[11px] tracking-widest">Total</td>
-                                    <td colSpan={7} className="p-5 font-black text-slate-700">{data.length} jenis aset</td>
+                                    <td className="p-4 font-black text-slate-900 uppercase text-[10px] tracking-widest">Total</td>
+                                    <td colSpan={7} className="p-4 font-black text-slate-700 text-[10px]">{data.length} jenis aset</td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -480,38 +480,38 @@ function ViewMobiler({ data }: { data: any[] }) {
                 ? <EmptyState icon={<Package size={48} />} text="Belum ada data mobiler" />
                 : (
                     <div className="overflow-x-auto rounded-[2rem] border-[3px] border-slate-900 shadow-[8px_8px_0_0_#f1f5f9]">
-                        <table className="border-collapse" style={{ minWidth: '1000px', width: '100%' }}>
+                        <table className="border-collapse w-full" style={{ minWidth: '650px' }}>
                             <thead>
                                 <tr>
-                                    <TH style={{ minWidth: '220px' }}>Nama Barang</TH>
-                                    <TH style={{ minWidth: '100px' }}>Jml Total</TH>
-                                    <TH style={{ minWidth: '80px' }}>Baik</TH>
-                                    <TH style={{ minWidth: '100px' }}>Rusak Ringan</TH>
-                                    <TH style={{ minWidth: '100px' }}>Rusak Berat</TH>
-                                    <TH style={{ minWidth: '100px' }}>Kekurangan</TH>
-                                    <TH style={{ minWidth: '180px', borderRight: 'none' }}>Keterangan</TH>
+                                    <th style={{ backgroundColor: '#0f172a', color: 'white', padding: '12px 14px', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.12em', textAlign: 'center', borderRight: '1px solid #334155', borderBottom: '4px solid #0f172a', minWidth: '180px' }}>Nama Barang</th>
+                                    <th style={{ backgroundColor: '#0f172a', color: 'white', padding: '12px 10px', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'center', borderRight: '1px solid #334155', borderBottom: '4px solid #0f172a', minWidth: '65px' }}>Total</th>
+                                    <th style={{ backgroundColor: '#0f172a', color: 'white', padding: '12px 10px', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'center', borderRight: '1px solid #334155', borderBottom: '4px solid #0f172a', minWidth: '55px' }}>Baik</th>
+                                    <th style={{ backgroundColor: '#0f172a', color: 'white', padding: '12px 10px', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'center', borderRight: '1px solid #334155', borderBottom: '4px solid #0f172a', minWidth: '70px' }}>R. Ringan</th>
+                                    <th style={{ backgroundColor: '#0f172a', color: 'white', padding: '12px 10px', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'center', borderRight: '1px solid #334155', borderBottom: '4px solid #0f172a', minWidth: '70px' }}>R. Berat</th>
+                                    <th style={{ backgroundColor: '#0f172a', color: 'white', padding: '12px 10px', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'center', borderRight: '1px solid #334155', borderBottom: '4px solid #0f172a', minWidth: '65px' }}>Kurang</th>
+                                    <th style={{ backgroundColor: '#0f172a', color: 'white', padding: '12px 14px', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'left', borderRight: 'none', borderBottom: '4px solid #0f172a' }}>Keterangan</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {data.map((m, i) => (
                                     <tr key={i} className="hover:bg-slate-50 transition-colors group">
-                                        <TD className="text-left font-black text-slate-900 bg-slate-50/30 group-hover:bg-white">{m.nama_barang}</TD>
-                                        <TD className="font-black">{m.jumlah_total ?? '0'}</TD>
-                                        <TD className="font-bold">{m.kondisi_baik ?? '0'}</TD>
-                                        <TD className="font-bold">{m.kondisi_rusak_ringan ?? '0'}</TD>
-                                        <TD className="font-bold">{m.kondisi_rusak_berat ?? '0'}</TD>
-                                        <TD>{m.kekurangan ?? '0'}</TD>
-                                        <td className="px-5 py-4 border-b border-slate-200 text-sm text-slate-600 font-medium text-left italic">
-                                            {m.keterangan || <span className="text-slate-300 not-italic">Tanpa keterangan</span>}
+                                        <td className="px-3 py-3 border-b border-r border-slate-200 text-xs font-black text-slate-900 bg-slate-50/30 group-hover:bg-white text-center">{m.nama_barang}</td>
+                                        <td className="px-3 py-3 border-b border-r border-slate-200 text-xs font-black text-slate-900 text-center">{m.jumlah_total ?? '0'}</td>
+                                        <td className="px-3 py-3 border-b border-r border-slate-200 text-xs font-bold text-slate-700 text-center">{m.kondisi_baik ?? '0'}</td>
+                                        <td className="px-3 py-3 border-b border-r border-slate-200 text-xs font-bold text-amber-700 text-center">{m.kondisi_rusak_ringan ?? '0'}</td>
+                                        <td className="px-3 py-3 border-b border-r border-slate-200 text-xs font-bold text-rose-700 text-center">{m.kondisi_rusak_berat ?? '0'}</td>
+                                        <td className="px-3 py-3 border-b border-r border-slate-200 text-xs font-bold text-slate-700 text-center">{m.kekurangan ?? '0'}</td>
+                                        <td className="px-3 py-3 border-b border-slate-200 text-xs text-slate-500 font-medium text-left italic">
+                                            {m.keterangan || <span className="text-slate-300 not-italic">-</span>}
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                             <tfoot>
                                 <tr style={{ backgroundColor: '#f8fafc', borderTop: '2px solid #0f172a' }}>
-                                    <td className="p-5 font-black text-slate-900 uppercase text-[11px] tracking-widest">Total Barang</td>
-                                    <td className="p-5 text-center font-black">{data.reduce((s, m) => s + (Number(m.jumlah_total) || 0), 0)}</td>
-                                    <td colSpan={5} className="p-5 text-slate-500 text-[11px] font-black">{data.length} jenis barang</td>
+                                    <td className="p-4 font-black text-slate-900 uppercase text-[10px] tracking-widest">Total Barang</td>
+                                    <td className="p-4 text-center font-black text-sm">{data.reduce((s, m) => s + (Number(m.jumlah_total) || 0), 0)}</td>
+                                    <td colSpan={5} className="p-4 text-slate-500 text-[10px] font-black">{data.length} jenis barang</td>
                                 </tr>
                             </tfoot>
                         </table>

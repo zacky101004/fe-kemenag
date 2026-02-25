@@ -13,7 +13,9 @@ import {
     Loader2,
     Shield,
     ChevronDown,
-    MapPin
+    MapPin,
+    Eye,
+    EyeOff
 } from 'lucide-react';
 import { api } from '@/lib/api';
 
@@ -21,6 +23,7 @@ export default function KasiMasterUsersPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [users, setUsers] = useState<any[]>([]);
     const [madrasahs, setMadrasahs] = useState<any[]>([]);
+    const [showPassword, setShowPassword] = useState(false);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalTitle, setModalTitle] = useState('Registrasi Pengguna');
@@ -121,6 +124,17 @@ export default function KasiMasterUsersPage() {
         });
         setModalTitle('Modifikasi Akun & Hak Akses');
         setIsModalOpen(true);
+    };
+
+    // Auto-fill username with NPSN when madrasah is selected
+    const handleMadrasahChange = (madrasahId: string) => {
+        const selected = madrasahs.find(m => String(m.id_madrasah) === String(madrasahId));
+        setFormData(prev => ({
+            ...prev,
+            id_madrasah: madrasahId,
+            // Only auto-fill if it's a new user (no existing id) and username hasn't been manually edited
+            username: !formData.id && selected ? selected.npsn : prev.username
+        }));
     };
 
     return (
@@ -254,22 +268,26 @@ export default function KasiMasterUsersPage() {
                 }
             >
                 <form id="user-form" onSubmit={handleSave} className="space-y-6">
-                    <Input label="Username / ID Login" required value={formData.username} onChange={(e) => setFormData({ ...formData, username: e.target.value })} />
-                    <Input label="Password (Isi baru/ubah)" type="password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
-
+                    {/* Step 1: Pilih Role */}
                     <div className="space-y-2">
                         <label className="input-label font-black text-[10px] uppercase text-slate-400 pl-1">Level Otoritas Sistem</label>
-                        <select className="w-full h-14 px-5 bg-slate-50 border-2 border-slate-200 rounded-3xl font-bold uppercase text-xs" value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })}>
+                        <select className="w-full h-14 px-5 bg-slate-50 border-2 border-slate-200 rounded-3xl font-bold uppercase text-xs" value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value, id_madrasah: '' })}>
                             <option value="operator_sekolah">OPERATOR MADRASAH (Input Data)</option>
                             <option value="staff_penmad">STAF PENMAD (Verifikator Teknis)</option>
                             <option value="kasi_penmad">KASI PENMAD (Pimpinan/Oversight)</option>
                         </select>
                     </div>
 
+                    {/* Step 2: Pilih Madrasah (only for operator) → auto-fill username */}
                     {formData.role === 'operator_sekolah' && (
                         <div className="space-y-2">
                             <label className="input-label font-black text-[10px] uppercase text-slate-400 pl-1">Afiliasi Unit Madrasah</label>
-                            <select className="w-full h-14 px-5 bg-slate-50 border-2 border-slate-200 rounded-3xl font-bold uppercase text-xs" required value={formData.id_madrasah} onChange={(e) => setFormData({ ...formData, id_madrasah: e.target.value })}>
+                            <select
+                                className="w-full h-14 px-5 bg-slate-50 border-2 border-slate-200 rounded-3xl font-bold uppercase text-xs"
+                                required
+                                value={formData.id_madrasah}
+                                onChange={(e) => handleMadrasahChange(e.target.value)}
+                            >
                                 <option value="">-- Pilih Madrasah --</option>
                                 {madrasahs.map(m => (
                                     <option key={m.id_madrasah} value={m.id_madrasah}>{m.nama_madrasah}</option>
@@ -277,6 +295,43 @@ export default function KasiMasterUsersPage() {
                             </select>
                         </div>
                     )}
+
+                    {/* Step 3: Username — auto-filled from NPSN, still editable */}
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between pl-1">
+                            <label className="input-label font-black text-[10px] uppercase text-slate-400">Username / ID Login</label>
+                            {formData.role === 'operator_sekolah' && formData.id_madrasah && !formData.id && (
+                                <span className="text-[8px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                                    ✓ Auto-isi dari NPSN
+                                </span>
+                            )}
+                        </div>
+                        <Input
+                            required
+                            value={formData.username}
+                            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                            placeholder={formData.role === 'operator_sekolah' ? 'Pilih madrasah untuk auto-isi...' : 'Masukkan username'}
+                        />
+                    </div>
+
+                    {/* Step 4: Password */}
+                    <Input
+                        label="Password"
+                        type={showPassword ? 'text' : 'password'}
+                        value={formData.password}
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        placeholder={formData.id ? 'Kosongkan jika tidak diubah' : 'Masukkan password baru'}
+                        rightElement={
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(p => !p)}
+                                className="text-slate-400 hover:text-slate-700 transition-colors"
+                                tabIndex={-1}
+                            >
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                        }
+                    />
                 </form>
             </Modal>
         </div>

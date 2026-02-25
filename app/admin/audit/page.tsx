@@ -25,7 +25,9 @@ import {
     Settings,
     Key,
     School,
-    Megaphone
+    Megaphone,
+    Undo2,
+    FileX
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Button } from '@/components/ui/Button';
@@ -112,11 +114,30 @@ export default function AuditLogsPage() {
     };
 
     const formatRole = (role: string, username: string) => {
-        const val = (role || username || '').toLowerCase();
-        if (val.includes('kasi') || val.includes('admin') || val === 'pimpinan') return 'Pimpinan';
-        if (val.includes('staff') || val === 'staff_penmad' || val.includes('teknis')) return 'Staf Teknis';
-        if (val.includes('operator') || val.includes('sekolah') || val.includes('op_')) return 'Operator Sekolah';
+        // Prioritas: cek field role dari backend
+        if (role === 'kasi_penmad') return 'Pimpinan';
+        if (role === 'staff_penmad') return 'Staf Teknis';
+        if (role === 'operator_sekolah') return 'Operator';
+
+        // Fallback: cek dari nilai string (jika role dikirim sebagai teks biasa)
+        const val = (role || '').toLowerCase();
+        if (val.includes('kasi') || val.includes('pimpin')) return 'Pimpinan';
+        if (val.includes('staff') || val.includes('staf') || val.includes('teknis')) return 'Staf Teknis';
+        if (val.includes('operator') || val.includes('sekolah')) return 'Operator';
+
+        // Fallback: username yang hanya angka = NPSN = Operator
+        if (/^\d+$/.test(username || '')) return 'Operator';
+
+        // Default jika tidak bisa teridentifikasi
         return 'Pengguna';
+    };
+
+    const getRoleStyle = (role: string, username: string) => {
+        const r = formatRole(role, username);
+        if (r === 'Pimpinan') return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        if (r === 'Staf Teknis') return 'bg-blue-50 text-blue-700 border-blue-200';
+        if (r === 'Operator') return 'bg-amber-50 text-amber-700 border-amber-200';
+        return 'bg-slate-50 text-slate-600 border-slate-200';
     };
 
     const getActionMeta = (action: string) => {
@@ -129,6 +150,9 @@ export default function AuditLogsPage() {
             case 'APPROVE_REPORT': return { label: 'Setujui Laporan', color: 'text-emerald-700', bg: 'bg-emerald-100', icon: <CheckCircle2 size={18} /> };
             case 'REVISE_REPORT': return { label: 'Minta Revisi', color: 'text-amber-700', bg: 'bg-amber-100', icon: <XCircle size={18} /> };
             case 'SUBMIT_REPORT': return { label: 'Kirim Laporan', color: 'text-indigo-700', bg: 'bg-indigo-50', icon: <Send size={18} /> };
+            case 'DELETE_LAPORAN': return { label: 'Hapus Laporan', color: 'text-rose-600', bg: 'bg-rose-50', icon: <Trash2 size={18} /> };
+            case 'RESTORE_LAPORAN': return { label: 'Pulihkan Laporan', color: 'text-teal-600', bg: 'bg-teal-50', icon: <Undo2 size={18} /> };
+            case 'PERMANENT_DELETE_LAPORAN': return { label: 'Hapus Permanen', color: 'text-rose-900', bg: 'bg-rose-100', icon: <FileX size={18} /> };
             case 'CREATE_MADRASAH': return { label: 'Tambah Madrasah', color: 'text-blue-700', bg: 'bg-blue-50', icon: <School size={18} /> };
             case 'UPDATE_MADRASAH': return { label: 'Update Madrasah', color: 'text-blue-800', bg: 'bg-blue-100', icon: <School size={18} /> };
             case 'UPDATE_PROFILE': return { label: 'Update Profil', color: 'text-indigo-600', bg: 'bg-indigo-50', icon: <User size={18} /> };
@@ -262,10 +286,7 @@ export default function AuditLogsPage() {
                                                             <span className="font-black text-slate-900 text-sm uppercase tracking-tighter truncate max-w-[120px]">
                                                                 {log.username}
                                                             </span>
-                                                            <span className={`px-2 py-0.5 rounded text-[8px] font-black border uppercase tracking-widest w-fit
-                                                                ${formatRole(log.role, log.username) === 'Pimpinan' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                                                                    formatRole(log.role, log.username) === 'Staf Teknis' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                                                                        'bg-slate-50 text-slate-600 border-slate-200'}`}>
+                                                            <span className={`px-2 py-0.5 rounded text-[8px] font-black border uppercase tracking-widest w-fit ${getRoleStyle(log.role, log.username)}`}>
                                                                 {formatRole(log.role, log.username)}
                                                             </span>
                                                         </div>
